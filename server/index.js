@@ -490,6 +490,9 @@ if (fs.existsSync(CLIENT_DIST)) {
 }
 
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => {
-  console.log(`Brancher berjalan di http://localhost:${PORT}`);
+const HOST = process.env.HOST || "0.0.0.0";
+server.listen(PORT, HOST, () => {
+  console.log(`Brancher berjalan di http://0.0.0.0:${PORT}`);
+  console.log(`Akses lokal: http://localhost:${PORT}`);
+  console.log(`Akses network: http://${require("os").networkInterfaces()["Ethernet"]?.[0]?.address || "your-ip"}:${PORT}`);
 });
