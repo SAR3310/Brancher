@@ -22,6 +22,7 @@ const { db, DATA_DIR, UPLOAD_DIR } = require("./db");
 const H = require("./helpers");
 const V = require("./validation");
 const { z } = require("zod");
+const { logger, logHttp, logAuth, logEvent, logError, logPermissionDenied, httpLogger } = require("./logger");
 
 const app = express();
 const server = http.createServer(app);
@@ -32,6 +33,7 @@ if (PROD) app.set("trust proxy", 1); // di belakang reverse proxy hosting
 
 // ---------- MIDDLEWARE ----------
 app.use(express.json());
+app.use(httpLogger); // HTTP request logging middleware
 app.use("/uploads", express.static(UPLOAD_DIR));
 
 // Session persisten di SQLite (tahan restart server)
@@ -82,11 +84,13 @@ app.post("/api/register", authLimiter, V.validateBody(V.RegisterSchema), (req, r
   
   // Check duplicate username
   if (db.prepare("SELECT id FROM users WHERE username = ?").get(username)) {
+    logAuth("failed_register", null, username, email, { reason: "username_taken" });
     return res.status(400).json({ error: "Username sudah dipakai" });
   }
   
   // Check duplicate email
   if (db.prepare("SELECT id FROM users WHERE email = ?").get(email)) {
+    logAuth("failed_register", null, username, email, { reason: "email_taken" });
     return res.status(400).json({ error: "Email sudah terdaftar" });
   }
   
@@ -94,6 +98,7 @@ app.post("/api/register", authLimiter, V.validateBody(V.RegisterSchema), (req, r
   const r = db.prepare("INSERT INTO users (username, email, password_hash) VALUES (?, ?, ?)").run(username, email, hash);
   req.session.userId = Number(r.lastInsertRowid);
   req.session.username = username;
+  logAuth("register", req.session.userId, username, email, { ip: req.ip });
   res.json({ id: req.session.userId, username });
 });
 
@@ -102,14 +107,23 @@ app.post("/api/login", authLimiter, V.validateBody(V.LoginSchema), (req, res) =>
   const { email: identifier, password } = req.validated; // email field bisa berisi email atau username
   const user = db.prepare("SELECT * FROM users WHERE username = ? OR email = ?").get(identifier, identifier);
   if (!user || !bcrypt.compareSync(password || "", user.password_hash)) {
+    logAuth("failed_login", null, identifier, null, { ip: req.ip });
     return res.status(401).json({ error: "Akun atau password salah" });
   }
   req.session.userId = user.id;
   req.session.username = user.username;
+  logAuth("login", user.id, user.username, user.email, { ip: req.ip });
   res.json({ id: user.id, username: user.username });
 });
 
-app.post("/api/logout", (req, res) => req.session.destroy(() => res.json({ ok: true })));
+app.post("/api/logout", (req, res) => {
+  const userId = req.session?.userId;
+  const username = req.session?.username;
+  req.session.destroy(() => {
+    if (userId) logAuth("logout", userId, username, null);
+    res.json({ ok: true });
+  });
+});
 
 app.get("/api/me", requireLogin, (req, res) => {
   res.json({ id: req.session.userId, username: req.session.username });
@@ -144,6 +158,7 @@ app.post("/api/branches", requireLogin, V.validateBody(V.CreateBranchSchema), (r
   insCh.run(branchId, "pengumuman", "announce", 0);
   insCh.run(branchId, "umum", "text", 1);
   insCh.run(branchId, "santai", "text", 2);
+  logEvent("branch_created", req.session.userId, { branchId, name, inviteCode: invite });
   res.json(db.prepare("SELECT * FROM branches WHERE id = ?").get(branchId));
 });
 
