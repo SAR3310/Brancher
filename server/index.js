@@ -414,6 +414,7 @@ io.on("connection", (socket) => {
     try {
       V.SendMessageSchema.parse({ content, reply_to: replyTo, file_url: fileUrl, file_name: fileName });
     } catch (error) {
+      logError(new Error(error.errors?.[0]?.message), "message:channel validation", { userId, channelId });
       return socket.emit("error", { message: error.errors?.[0]?.message || "Validasi pesan gagal" });
     }
     
@@ -421,7 +422,10 @@ io.on("connection", (socket) => {
     const ch = H.channelForMember(channelId, userId);
     if (!ch || ch.type === "voice") return;
     // Announce channel: hanya staff yang boleh kirim
-    if (ch.type === "announce" && !H.isBranchStaff(userId, ch.branch_id)) return;
+    if (ch.type === "announce" && !H.isBranchStaff(userId, ch.branch_id)) {
+      logPermissionDenied(userId, "send_message", `channel:${channelId}`, { type: "announce_channel" });
+      return;
+    }
     
     // Sanitize content untuk XSS prevention
     const sanitized = V.sanitizeContent(content);
@@ -429,7 +433,9 @@ io.on("connection", (socket) => {
     const r = db.prepare(
       "INSERT INTO messages (channel_id, user_id, content, file_url, file_name, reply_to) VALUES (?, ?, ?, ?, ?, ?)"
     ).run(channelId, userId, sanitized || null, fileUrl || null, fileName || null, replyTo || null);
-    const msg = H.getMessage(Number(r.lastInsertRowid));
+    const messageId = Number(r.lastInsertRowid);
+    const msg = H.getMessage(messageId);
+    logEvent("message_sent", userId, { messageId, channelId, hasFile: !!fileUrl });
     io.to("channel:" + channelId).emit("message:channel", msg);
     io.to("branch:" + ch.branch_id).emit("activity", { type: "channel", id: channelId, branchId: ch.branch_id, from: userId, mentions: extractMentions(sanitized) });
   });
