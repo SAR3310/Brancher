@@ -27,7 +27,16 @@ const { getTemplate } = require("./templates");
 
 const app = express();
 const server = http.createServer(app);
-const io = new Server(server);
+const io = new Server(server, {
+  cors: {
+    origin: "*", // dev: allow all; production: restrict to your domain
+    methods: ["GET", "POST"],
+    credentials: true,
+  },
+  transports: ["websocket", "polling"],
+  pingInterval: 25000,
+  pingTimeout: 60000,
+});
 
 const PROD = process.env.NODE_ENV === "production";
 if (PROD) app.set("trust proxy", 1); // di belakang reverse proxy hosting
@@ -492,7 +501,9 @@ io.on("connection", (socket) => {
 
   onlineUsers.set(userId, (onlineUsers.get(userId) || 0) + 1);
   io.emit("presence", [...onlineUsers.keys()]);
+  socket.emit("user_online", { userId, username }); // Broadcast user online event
   socket.join("user:" + userId);
+  logEvent("socket_connected", userId, { socketId: socket.id });
 
   // Join room semua branch yang diikuti (untuk event branch-level)
   const myBranches = db.prepare("SELECT branch_id FROM memberships WHERE user_id = ?").all(userId);
@@ -519,78 +530,102 @@ io.on("connection", (socket) => {
 
   // --- pesan channel ---
   socket.on("message:channel", ({ channelId, content, fileUrl, fileName, replyTo }) => {
-    // Validate message
     try {
-      V.SendMessageSchema.parse({
-        content,
-        reply_to: replyTo,
-        file_url: fileUrl,
-        file_name: fileName,
+      // Validate message
+      try {
+        V.SendMessageSchema.parse({
+          content,
+          reply_to: replyTo,
+          file_url: fileUrl,
+          file_name: fileName,
+        });
+      } catch (error) {
+        logError(new Error(error.errors?.[0]?.message), "message:channel validation", {
+          userId,
+          channelId,
+        });
+        return socket.emit("error", {
+          message: error.errors?.[0]?.message || "Validasi pesan gagal",
+        });
+      }
+
+      if (!content && !fileUrl) return;
+      const ch = H.channelForMember(channelId, userId);
+      if (!ch || ch.type === "voice") return;
+      // Announce channel: hanya staff yang boleh kirim
+      if (ch.type === "announce" && !H.isBranchStaff(userId, ch.branch_id)) {
+        logPermissionDenied(userId, "send_message", `channel:${channelId}`, {
+          type: "announce_channel",
+        });
+        return;
+      }
+
+      // Sanitize content untuk XSS prevention
+      const sanitized = V.sanitizeContent(content);
+
+      const r = db
+        .prepare(
+          "INSERT INTO messages (channel_id, user_id, content, file_url, file_name, reply_to) VALUES (?, ?, ?, ?, ?, ?)",
+        )
+        .run(
+          channelId,
+          userId,
+          sanitized || null,
+          fileUrl || null,
+          fileName || null,
+          replyTo || null,
+        );
+      const messageId = Number(r.lastInsertRowid);
+      const msg = H.getMessage(messageId);
+      logEvent("message_sent", userId, { messageId, channelId, hasFile: !!fileUrl });
+      
+      // Emit to channel - message delivery
+      io.to("channel:" + channelId).emit("message:channel", msg);
+      logEvent("message_delivered", userId, { messageId, channelId, recipients: "channel:" + channelId });
+      
+      // Broadcast activity
+      io.to("branch:" + ch.branch_id).emit("activity", {
+        type: "channel",
+        id: channelId,
+        branchId: ch.branch_id,
+        from: userId,
+        mentions: extractMentions(sanitized),
       });
     } catch (error) {
-      logError(new Error(error.errors?.[0]?.message), "message:channel validation", {
-        userId,
-        channelId,
-      });
-      return socket.emit("error", {
-        message: error.errors?.[0]?.message || "Validasi pesan gagal",
-      });
+      logError(error, "message:channel handler", { userId, channelId });
+      socket.emit("error", { message: "Gagal mengirim pesan" });
     }
-
-    if (!content && !fileUrl) return;
-    const ch = H.channelForMember(channelId, userId);
-    if (!ch || ch.type === "voice") return;
-    // Announce channel: hanya staff yang boleh kirim
-    if (ch.type === "announce" && !H.isBranchStaff(userId, ch.branch_id)) {
-      logPermissionDenied(userId, "send_message", `channel:${channelId}`, {
-        type: "announce_channel",
-      });
-      return;
-    }
-
-    // Sanitize content untuk XSS prevention
-    const sanitized = V.sanitizeContent(content);
-
-    const r = db
-      .prepare(
-        "INSERT INTO messages (channel_id, user_id, content, file_url, file_name, reply_to) VALUES (?, ?, ?, ?, ?, ?)",
-      )
-      .run(
-        channelId,
-        userId,
-        sanitized || null,
-        fileUrl || null,
-        fileName || null,
-        replyTo || null,
-      );
-    const messageId = Number(r.lastInsertRowid);
-    const msg = H.getMessage(messageId);
-    logEvent("message_sent", userId, { messageId, channelId, hasFile: !!fileUrl });
-    io.to("channel:" + channelId).emit("message:channel", msg);
-    io.to("branch:" + ch.branch_id).emit("activity", {
-      type: "channel",
-      id: channelId,
-      branchId: ch.branch_id,
-      from: userId,
-      mentions: extractMentions(sanitized),
-    });
   });
 
   // --- pesan DM (hanya antar teman) ---
   socket.on("message:dm", ({ toUserId, content, fileUrl, fileName, replyTo }) => {
-    if (!content && !fileUrl) return;
-    if (!H.areFriends(userId, toUserId)) return;
-    const key = H.dmKey(userId, toUserId);
-    const r = db
-      .prepare(
-        "INSERT INTO messages (dm_key, user_id, content, file_url, file_name, reply_to) VALUES (?, ?, ?, ?, ?, ?)",
-      )
-      .run(key, userId, content || null, fileUrl || null, fileName || null, replyTo || null);
-    const msg = H.getMessage(Number(r.lastInsertRowid));
-    io.to("user:" + userId)
-      .to("user:" + toUserId)
-      .emit("message:dm", msg);
-    io.to("user:" + toUserId).emit("activity", { type: "dm", id: userId, from: userId });
+    try {
+      if (!content && !fileUrl) return;
+      if (!H.areFriends(userId, toUserId)) {
+        logPermissionDenied(userId, "send_dm", `user:${toUserId}`, { reason: "not_friends" });
+        return;
+      }
+      const key = H.dmKey(userId, toUserId);
+      const r = db
+        .prepare(
+          "INSERT INTO messages (dm_key, user_id, content, file_url, file_name, reply_to) VALUES (?, ?, ?, ?, ?, ?)",
+        )
+        .run(key, userId, content || null, fileUrl || null, fileName || null, replyTo || null);
+      const msg = H.getMessage(Number(r.lastInsertRowid));
+      logEvent("dm_sent", userId, { messageId: msg.id, toUserId });
+      
+      // Emit to both users
+      io.to("user:" + userId)
+        .to("user:" + toUserId)
+        .emit("message:dm", msg);
+      logEvent("dm_delivered", userId, { messageId: msg.id, toUserId });
+      
+      // Broadcast activity to recipient
+      io.to("user:" + toUserId).emit("activity", { type: "dm", id: userId, from: userId });
+    } catch (error) {
+      logError(error, "message:dm handler", { userId, toUserId });
+      socket.emit("error", { message: "Gagal mengirim DM" });
+    }
   });
 
   // --- edit (pemilik saja) ---
@@ -661,14 +696,27 @@ io.on("connection", (socket) => {
   });
 
   socket.on("typing", ({ channelId }) => {
-    socket.to("channel:" + channelId).emit("typing", { username });
+    try {
+      socket.to("channel:" + channelId).emit("typing", { username, userId });
+    } catch (error) {
+      logError(error, "typing handler", { userId, channelId });
+    }
+  });
+
+  socket.on("error", (error) => {
+    logError(new Error(error), "socket.io client error", { userId, socketId: socket.id });
   });
 
   socket.on("disconnect", () => {
-    const n = (onlineUsers.get(userId) || 1) - 1;
-    if (n <= 0) onlineUsers.delete(userId);
-    else onlineUsers.set(userId, n);
-    io.emit("presence", [...onlineUsers.keys()]);
+    try {
+      const n = (onlineUsers.get(userId) || 1) - 1;
+      if (n <= 0) onlineUsers.delete(userId);
+      else onlineUsers.set(userId, n);
+      io.emit("presence", [...onlineUsers.keys()]);
+      logEvent("socket_disconnected", userId, { socketId: socket.id });
+    } catch (error) {
+      logError(error, "disconnect handler", { userId });
+    }
   });
 });
 
