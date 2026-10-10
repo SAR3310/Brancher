@@ -132,7 +132,7 @@ function validateBody(schema) {
       next();
     } catch (error) {
       if (error instanceof z.ZodError) {
-        const messages = error.errors.map((e) => `${e.path.join(".")}: ${e.message}`);
+        const messages = error.issues.map((e) => `${e.path.join(".")}: ${e.message}`);
         return res.status(400).json({ error: messages.join("; ") });
       }
       return res.status(400).json({ error: "Validasi gagal" });
@@ -153,7 +153,7 @@ function validateQuery(schema) {
       next();
     } catch (error) {
       if (error instanceof z.ZodError) {
-        const messages = error.errors.map((e) => `${e.path.join(".")}: ${e.message}`);
+        const messages = error.issues.map((e) => `${e.path.join(".")}: ${e.message}`);
         return res.status(400).json({ error: messages.join("; ") });
       }
       return res.status(400).json({ error: "Validasi gagal" });
