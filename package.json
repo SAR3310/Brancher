@@ -7,7 +7,11 @@
     "start": "node server/index.js",
     "dev": "node server/index.js",
     "build": "cd client && npm install && npm run build",
-    "postinstall": "cd client && npm install"
+    "postinstall": "cd client && npm install",
+    "lint": "eslint server/ client/src/",
+    "lint:fix": "eslint server/ client/src/ --fix",
+    "format": "prettier --write \"server/**/*.js\" \"client/src/**/*.{js,jsx}\" \"*.md\"",
+    "format:check": "prettier --check \"server/**/*.js\" \"client/src/**/*.{js,jsx}\" \"*.md\""
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
@@ -25,5 +29,10 @@
   },
   "engines": {
     "node": ">=22"
+  },
+  "devDependencies": {
+    "eslint": "^10.11.0",
+    "globals": "^17.13.0",
+    "prettier": "^3.9.9"
   }
 }
