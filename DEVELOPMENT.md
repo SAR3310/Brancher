@@ -275,3 +275,81 @@ curl -X POST http://localhost:3000/api/register \
 - [ ] Test email verification (if implementing)
 - [ ] Monitor error logs
 - [ ] Backup database regularly
+
+---
+
+## 📚 Contributing & Standards
+
+### Before Committing
+
+Follow these standards to maintain code quality:
+
+1. **Code Style**
+   - Run `npm run lint` to check for issues
+   - Use ESLint config in project root
+   - Format with Prettier (when setup in Phase 2)
+
+2. **Testing**
+   - Add tests for new features (when testing framework setup)
+   - Run `npm test` to verify
+   - Target: >70% coverage
+
+3. **Documentation**
+   - Update API.md if endpoints changed
+   - Add comments for complex logic
+   - JSDoc for functions (see examples in server/)
+   - Commit message format: `type(scope): description` (e.g., `feat(messages): add reactions`)
+
+4. **Security**
+   - Check SECURITY-AUDIT.md for vulnerabilities
+   - Use parameterized queries always
+   - Validate & sanitize user input
+   - No secrets in code
+
+### Security Checklist
+
+- ✅ Always use `db.prepare().get/all/run()` (parameterized queries)
+- ✅ Validate all user input
+- ✅ Check authorization before data access
+- ✅ Hash passwords with bcryptjs
+- ✅ Use session for persistence
+- ✅ No console.log of sensitive data
+
+### Commit Message Format
+
+```
+<type>(<scope>): <subject>
+
+<optional body>
+
+<optional footer>
+```
+
+**Types**: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `chore`  
+**Scope**: `auth`, `messages`, `channels`, `branches`, `friends`, `db`, `ui`
+
+Examples:
+- `feat(messages): add emoji reactions`
+- `fix(auth): prevent session fixation`
+- `docs(api): update message endpoints`
+- `refactor(db): optimize message queries`
+
+### Where to Find Help
+
+- **Architecture**: See `docs/TECHNOLOGY-RESEARCH.md`
+- **Security issues**: See `docs/SECURITY-AUDIT.md`
+- **API details**: See `docs/API.md`
+- **Design specs**: See `docs/DESIGN-SYSTEM.md`
+- **Task list**: See `docs/TASK-PRIORITIZATION.md`
+- **Implementation guide**: See `docs/AGENT-INSTRUCTIONS.md`
+
+---
+
+## 🎯 Development Roadmap
+
+**Phase 1** (Weeks 1-4): Security hardening
+**Phase 2** (Weeks 5-8): Testing & code quality
+**Phase 3** (Weeks 9-16): Scalability foundation
+**Phase 4** (Weeks 17-24): Production ready
+
+See `docs/INDEX.md` for detailed roadmap and `docs/TASK-PRIORITIZATION.md` for sprint planning.

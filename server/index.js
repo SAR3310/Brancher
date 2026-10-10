@@ -5,6 +5,7 @@
 //   DATA_DIR        (default ./data) - database, session, upload
 //   SESSION_SECRET  (WAJIB diganti di produksi)
 // ============================================================
+require("dotenv").config();
 const express = require("express");
 const http = require("http");
 const path = require("path");
@@ -19,6 +20,8 @@ const { nanoid } = require("nanoid");
 
 const { db, DATA_DIR, UPLOAD_DIR } = require("./db");
 const H = require("./helpers");
+const V = require("./validation");
+const { z } = require("zod");
 
 const app = express();
 const server = http.createServer(app);
@@ -74,23 +77,19 @@ function requireLogin(req, res, next) {
 // AUTH  (email + username; OAuth Google/GitHub menyusul
 //        setelah punya URL publik)
 // ============================================================
-app.post("/api/register", authLimiter, (req, res) => {
-  const { username, email, password } = req.body;
-  if (!username || !/^[a-zA-Z0-9_]{3,20}$/.test(username)) {
-    return res.status(400).json({ error: "Username 3-20 karakter, huruf/angka/underscore" });
-  }
-  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    return res.status(400).json({ error: "Email tidak valid" });
-  }
-  if (!password || password.length < 6) {
-    return res.status(400).json({ error: "Password minimal 6 karakter" });
-  }
+app.post("/api/register", authLimiter, V.validateBody(V.RegisterSchema), (req, res) => {
+  const { username, email, password } = req.validated;
+  
+  // Check duplicate username
   if (db.prepare("SELECT id FROM users WHERE username = ?").get(username)) {
     return res.status(400).json({ error: "Username sudah dipakai" });
   }
+  
+  // Check duplicate email
   if (db.prepare("SELECT id FROM users WHERE email = ?").get(email)) {
     return res.status(400).json({ error: "Email sudah terdaftar" });
   }
+  
   const hash = bcrypt.hashSync(password, 10);
   const r = db.prepare("INSERT INTO users (username, email, password_hash) VALUES (?, ?, ?)").run(username, email, hash);
   req.session.userId = Number(r.lastInsertRowid);
@@ -98,8 +97,9 @@ app.post("/api/register", authLimiter, (req, res) => {
   res.json({ id: req.session.userId, username });
 });
 
-app.post("/api/login", authLimiter, (req, res) => {
-  const { identifier, password } = req.body; // identifier = email ATAU username
+
+app.post("/api/login", authLimiter, V.validateBody(V.LoginSchema), (req, res) => {
+  const { email: identifier, password } = req.validated; // email field bisa berisi email atau username
   const user = db.prepare("SELECT * FROM users WHERE username = ? OR email = ?").get(identifier, identifier);
   if (!user || !bcrypt.compareSync(password || "", user.password_hash)) {
     return res.status(401).json({ error: "Akun atau password salah" });
@@ -134,11 +134,10 @@ app.get("/api/branches", requireLogin, (req, res) => {
 });
 
 // Buat branch baru (pembuat jadi owner, channel default dibuat)
-app.post("/api/branches", requireLogin, (req, res) => {
-  const name = (req.body.name || "").trim().slice(0, 50);
-  if (name.length < 2) return res.status(400).json({ error: "Nama branch minimal 2 karakter" });
+app.post("/api/branches", requireLogin, V.validateBody(V.CreateBranchSchema), (req, res) => {
+  const { name, description } = req.validated;
   const invite = nanoid(8);
-  const r = db.prepare("INSERT INTO branches (name, description, invite_code, owner_id) VALUES (?, ?, ?, ?)").run(name, (req.body.description || "").slice(0, 200), invite, req.session.userId);
+  const r = db.prepare("INSERT INTO branches (name, description, invite_code, owner_id) VALUES (?, ?, ?, ?)").run(name, description, invite, req.session.userId);
   const branchId = Number(r.lastInsertRowid);
   db.prepare("INSERT INTO memberships (user_id, branch_id, role) VALUES (?, ?, 'owner')").run(req.session.userId, branchId);
   const insCh = db.prepare("INSERT INTO channels (branch_id, name, type, position) VALUES (?, ?, ?, ?)");
@@ -325,16 +324,36 @@ app.get("/api/messages/pinned/:channelId", requireLogin, (req, res) => {
   res.json(H.attachReactions(rows));
 });
 
-app.get("/api/search", requireLogin, (req, res) => {
-  const q = (req.query.q || "").trim();
-  const ch = H.channelForMember(Number(req.query.channel), req.session.userId);
-  if (!q || !ch) return res.json([]);
-  const rows = db.prepare(H.MSG_SELECT + " WHERE m.channel_id = ? AND m.content LIKE ? ORDER BY m.id DESC LIMIT 30").all(ch.id, `%${q}%`);
+app.get("/api/search", requireLogin, V.validateQuery(V.SearchMessagesSchema), (req, res) => {
+  const { q, channel } = req.validated;
+  const ch = channel ? H.channelForMember(channel, req.session.userId) : null;
+  if (!ch && channel) return res.json([]);
+  
+  const query = ch
+    ? H.MSG_SELECT + " WHERE m.channel_id = ? AND m.content LIKE ? ORDER BY m.id DESC LIMIT 30"
+    : H.MSG_SELECT + " WHERE m.user_id = ? AND m.content LIKE ? AND m.channel_id IS NOT NULL ORDER BY m.id DESC LIMIT 30";
+  
+  const params = ch ? [ch.id, `%${q}%`] : [req.session.userId, `%${q}%`];
+  const rows = db.prepare(query).all(...params);
   res.json(H.attachReactions(rows));
 });
 
 app.post("/api/upload", requireLogin, upload.single("file"), (req, res) => {
   if (!req.file) return res.status(400).json({ error: "Tidak ada file" });
+  
+  // Validate file
+  try {
+    V.FileUploadSchema.parse({
+      size: req.file.size,
+      mimetype: req.file.mimetype,
+    });
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return res.status(400).json({ error: error.errors[0].message });
+    }
+    return res.status(400).json({ error: "Validasi file gagal" });
+  }
+  
   res.json({ url: "/uploads/" + req.file.filename, name: req.file.originalname });
 });
 
@@ -376,17 +395,28 @@ io.on("connection", (socket) => {
 
   // --- pesan channel ---
   socket.on("message:channel", ({ channelId, content, fileUrl, fileName, replyTo }) => {
+    // Validate message
+    try {
+      V.SendMessageSchema.parse({ content, reply_to: replyTo, file_url: fileUrl, file_name: fileName });
+    } catch (error) {
+      return socket.emit("error", { message: error.errors?.[0]?.message || "Validasi pesan gagal" });
+    }
+    
     if (!content && !fileUrl) return;
     const ch = H.channelForMember(channelId, userId);
     if (!ch || ch.type === "voice") return;
     // Announce channel: hanya staff yang boleh kirim
     if (ch.type === "announce" && !H.isBranchStaff(userId, ch.branch_id)) return;
+    
+    // Sanitize content untuk XSS prevention
+    const sanitized = V.sanitizeContent(content);
+    
     const r = db.prepare(
       "INSERT INTO messages (channel_id, user_id, content, file_url, file_name, reply_to) VALUES (?, ?, ?, ?, ?, ?)"
-    ).run(channelId, userId, content || null, fileUrl || null, fileName || null, replyTo || null);
+    ).run(channelId, userId, sanitized || null, fileUrl || null, fileName || null, replyTo || null);
     const msg = H.getMessage(Number(r.lastInsertRowid));
     io.to("channel:" + channelId).emit("message:channel", msg);
-    io.to("branch:" + ch.branch_id).emit("activity", { type: "channel", id: channelId, branchId: ch.branch_id, from: userId, mentions: extractMentions(content) });
+    io.to("branch:" + ch.branch_id).emit("activity", { type: "channel", id: channelId, branchId: ch.branch_id, from: userId, mentions: extractMentions(sanitized) });
   });
 
   // --- pesan DM (hanya antar teman) ---

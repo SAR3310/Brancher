@@ -311,6 +311,21 @@ npm install
 
 ---
 
+## 🔒 Security & Issues Reporting
+
+**For security vulnerabilities**: See `docs/SECURITY-AUDIT.md` for known issues and remediation roadmap.
+
+**Current Security Status**: 
+- ✅ Passwords hashed with bcryptjs
+- ✅ Rate limiting on auth endpoints
+- ⚠️ Input validation incomplete (see `docs/SECURITY-AUDIT.md` for details)
+- ⚠️ CSRF protection not implemented (in Phase 1 roadmap)
+- ⚠️ Logging not structured (in Phase 1 roadmap)
+
+See `docs/INDEX.md` for complete documentation and development roadmap.
+
+---
+
 ## 📚 Resources
 
 - **Express.js**: https://expressjs.com/

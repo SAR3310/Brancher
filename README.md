@@ -268,6 +268,20 @@ brancher/
 
 ---
 
+## 📚 Documentation
+
+Comprehensive documentation tersedia di `docs/`:
+
+- **[docs/INDEX.md](docs/INDEX.md)** - Documentation portal (START HERE)
+- **[docs/API.md](docs/API.md)** - Complete REST API reference
+- **[docs/TECHNOLOGY-RESEARCH.md](docs/TECHNOLOGY-RESEARCH.md)** - Tech stack analysis & optimization
+- **[docs/SECURITY-AUDIT.md](docs/SECURITY-AUDIT.md)** - Security assessment & roadmap
+- **[docs/DESIGN-SYSTEM.md](docs/DESIGN-SYSTEM.md)** - UI/UX specifications
+- **[docs/AGENT-INSTRUCTIONS.md](docs/AGENT-INSTRUCTIONS.md)** - For developers & agents
+- **[docs/TASK-PRIORITIZATION.md](docs/TASK-PRIORITIZATION.md)** - Sprint planning & priorities
+
+---
+
 ## 🚀 Deployment
 
 ### **Docker**
