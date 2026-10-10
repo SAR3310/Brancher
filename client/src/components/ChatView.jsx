@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { api, EMOJIS, timeStr } from "../utils";
+import { api, EMOJIS } from "../utils";
 import Message from "./Message.jsx";
 import { IconPin, IconAttach, IconSend, IconClose, IconHash, IconMegaphone } from "./Icons.jsx";
 
