@@ -11,6 +11,12 @@ RUN npm install --omit=dev --ignore-scripts && cd client && npm install
 COPY . .
 RUN cd client && npm run build
 
+# Create non-root user for security (don't run as root)
+RUN addgroup -g 1001 -S nodejs && adduser -S nodejs -u 1001
+RUN chown -R nodejs:nodejs /app /data 2>/dev/null || true
+
+USER nodejs
+
 ENV NODE_ENV=production
 ENV DATA_DIR=/data
 EXPOSE 3000

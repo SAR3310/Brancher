@@ -24,12 +24,19 @@ const V = require("./validation");
 const { z } = require("zod");
 const { logAuth, logEvent, logError, logPermissionDenied, httpLogger } = require("./logger");
 const { getTemplate } = require("./templates");
+const { securityHeadersMiddleware, corsConfigMiddleware } = require("./security");
 
 const app = express();
 const server = http.createServer(app);
+
+// Configure CORS based on environment
+const ALLOWED_ORIGINS = PROD
+  ? (process.env.CORS_ORIGINS || 'localhost').split(',').map(o => o.trim())
+  : ['http://localhost:3000', 'http://localhost:5173', 'http://127.0.0.1:3000', 'http://127.0.0.1:5173'];
+
 const io = new Server(server, {
   cors: {
-    origin: "*", // dev: allow all; production: restrict to your domain
+    origin: ALLOWED_ORIGINS,
     methods: ["GET", "POST"],
     credentials: true,
   },
@@ -42,7 +49,10 @@ const PROD = process.env.NODE_ENV === "production";
 if (PROD) app.set("trust proxy", 1); // di belakang reverse proxy hosting
 
 // ---------- MIDDLEWARE ----------
-app.use(express.json());
+// Security headers (OWASP Top 10 hardening)
+app.use(securityHeadersMiddleware);
+
+app.use(express.json({ limit: '1mb' })); // Limit request size to prevent DoS
 app.use(httpLogger); // HTTP request logging middleware
 app.use("/uploads", express.static(UPLOAD_DIR));
 
@@ -61,11 +71,22 @@ const sessionMiddleware = session({
 app.use(sessionMiddleware);
 io.engine.use(sessionMiddleware);
 
+// Apply global rate limiting for DoS protection (only in production)
+app.use(globalLimiter);
+
 // Rate limit endpoint auth: cegah brute-force password
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 30,
   message: { error: "Terlalu banyak percobaan, coba lagi nanti" },
+});
+
+// Global rate limiter: cegah DoS untuk semua endpoint
+const globalLimiter = rateLimit({
+  windowMs: 1 * 60 * 1000, // 1 menit
+  max: 100, // 100 requests per minute per IP
+  message: { error: "Terlalu banyak request, coba lagi nanti" },
+  skip: (req) => !PROD, // Skip in development
 });
 
 // ---------- UPLOAD ----------
