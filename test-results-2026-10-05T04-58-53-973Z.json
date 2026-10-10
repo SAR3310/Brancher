@@ -1,0 +1,202 @@
+{
+  "e2eTests": [
+    {
+      "testName": "Register Alice",
+      "passed": false,
+      "status": 400
+    },
+    {
+      "testName": "Login Alice",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "testName": "Verify Alice Session (GET /api/me)",
+      "passed": 6,
+      "status": 200
+    },
+    {
+      "testName": "Create Branch (Test Community)",
+      "passed": 4,
+      "status": 200
+    },
+    {
+      "testName": "List Branches",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "testName": "Get Branch Details",
+      "passed": [
+        {
+          "id": 10,
+          "branch_id": 4,
+          "name": "pengumuman",
+          "type": "announce",
+          "position": 0
+        },
+        {
+          "id": 11,
+          "branch_id": 4,
+          "name": "umum",
+          "type": "text",
+          "position": 1
+        },
+        {
+          "id": 12,
+          "branch_id": 4,
+          "name": "santai",
+          "type": "text",
+          "position": 2
+        }
+      ],
+      "status": 200
+    },
+    {
+      "testName": "Socket.IO Connect as Alice",
+      "passed": true
+    },
+    {
+      "testName": "Send Message via Socket.IO",
+      "passed": false
+    },
+    {
+      "testName": "Fetch Message History",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "testName": "Register Bob",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "testName": "Login Bob",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "testName": "Send DM via Socket.IO (Alice → Bob)",
+      "passed": false
+    },
+    {
+      "testName": "Logout Alice",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "testName": "Verify Session Cleared",
+      "passed": true,
+      "status": 401
+    },
+    {
+      "testName": "Reject Invalid Email",
+      "passed": true,
+      "status": 400
+    },
+    {
+      "testName": "Reject Missing Fields",
+      "passed": true,
+      "status": 400
+    },
+    {
+      "testName": "Reject Unauthorized (GET /api/me without login)",
+      "passed": true,
+      "status": 401
+    },
+    {
+      "testName": "Handle 404 Not Found",
+      "passed": true,
+      "status": 404
+    },
+    {
+      "testName": "Reject Duplicate Email",
+      "passed": "Email sudah terdaftar",
+      "status": 400
+    },
+    {
+      "testName": "Reject Duplicate Username",
+      "passed": "Username sudah dipakai",
+      "status": 400
+    },
+    {
+      "testName": "Reject Invalid Password",
+      "passed": true,
+      "status": 401
+    }
+  ],
+  "loadTests": {
+    "usersCreated": 5,
+    "usersLoggedIn": 5,
+    "branchesCreated": 5,
+    "messagesPosted": 0,
+    "errors": []
+  },
+  "socketTests": [],
+  "errorTests": [],
+  "performanceMetrics": {
+    "startTime": 1791176295033,
+    "endTime": 1791176333973,
+    "totalDuration": 38940,
+    "avgResponseTime": 80.28888888888889,
+    "responseTimes": [
+      60,
+      43,
+      163,
+      38,
+      35,
+      29,
+      12,
+      25,
+      21,
+      163,
+      140,
+      34,
+      3,
+      166,
+      157,
+      38,
+      12,
+      93,
+      228,
+      246,
+      156,
+      71,
+      93,
+      311,
+      187,
+      100,
+      40,
+      11,
+      155,
+      143,
+      32,
+      12,
+      21,
+      169,
+      154,
+      31,
+      13,
+      49,
+      8,
+      3,
+      3,
+      7,
+      4,
+      4,
+      130
+    ],
+    "memoryUsage": {
+      "rss": 55627776,
+      "heapUsed": 10161992,
+      "heapTotal": 11894784
+    },
+    "maxResponseTime": 311,
+    "minResponseTime": 3
+  },
+  "summary": {
+    "passed": 18,
+    "failed": 3,
+    "totalTests": 21
+  }
+}

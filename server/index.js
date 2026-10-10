@@ -163,6 +163,65 @@ app.get("/api/me", requireLogin, (req, res) => {
   res.json({ id: req.session.userId, username: req.session.username });
 });
 
+// First-run check: is user already in any branch?
+app.get("/api/first-run", requireLogin, (req, res) => {
+  const branches = db
+    .prepare("SELECT COUNT(*) as count FROM memberships WHERE user_id = ?")
+    .get(req.session.userId).count;
+  
+  res.json({
+    isFirstRun: branches === 0,
+    branchCount: branches,
+  });
+});
+
+// Health check endpoint (no login required)
+// Used for uptime monitoring & status check
+app.get("/api/health", (req, res) => {
+  try {
+    const stats = {
+      status: "ok",
+      timestamp: new Date().toISOString(),
+      uptime: Math.floor(process.uptime()),
+      version: "0.1.0",
+      environment: PROD ? "production" : "development",
+      database: {
+        status: "connected",
+      },
+    };
+
+    // Get basic database health
+    const userCount = db.prepare("SELECT COUNT(*) as count FROM users").get().count;
+    const branchCount = db.prepare("SELECT COUNT(*) as count FROM branches").get().count;
+    const messageCount = db.prepare("SELECT COUNT(*) as count FROM messages").get().count;
+    const activeUsers = onlineUsers.size;
+
+    stats.database = {
+      status: "connected",
+      users: userCount,
+      branches: branchCount,
+      messages: messageCount,
+      activeConnections: activeUsers,
+    };
+
+    // Memory usage
+    const memUsage = process.memoryUsage();
+    stats.memory = {
+      heapUsedMB: Math.round(memUsage.heapUsed / 1024 / 1024),
+      heapTotalMB: Math.round(memUsage.heapTotal / 1024 / 1024),
+    };
+
+    res.json(stats);
+  } catch (error) {
+    logError(error, "health_check");
+    res.status(503).json({
+      status: "error",
+      timestamp: new Date().toISOString(),
+      message: error.message,
+    });
+  }
+});
+
 // Placeholder OAuth: nanti diaktifkan setelah deploy
 app.get("/api/auth/:provider", (req, res) => {
   res

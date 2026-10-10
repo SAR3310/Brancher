@@ -79,6 +79,43 @@ export default function Modal({
           <IconClose size={15} />
         </button>
 
+        {modal.type === "firstRun" && (
+          <div className="first-run-modal">
+            <h2>🎉 Selamat Datang di Brancher!</h2>
+            <p className="modal-sub">
+              Mulai dengan membuat branch baru atau bergabung dengan yang sudah ada.
+            </p>
+
+            <div className="first-run-options">
+              <button
+                className="first-run-btn create"
+                onClick={() => {
+                  setModal({ type: "createBranch" });
+                  setError("");
+                }}
+              >
+                <div className="first-run-btn-title">➕ Buat Branch Baru</div>
+                <div className="first-run-btn-desc">
+                  Buat komunitas atau ruang diskusi untuk teman-temanmu
+                </div>
+              </button>
+
+              <button
+                className="first-run-btn join"
+                onClick={() => {
+                  setModal({ type: "joinBranch" });
+                  setError("");
+                }}
+              >
+                <div className="first-run-btn-title">🔗 Bergabung dengan Kode</div>
+                <div className="first-run-btn-desc">
+                  Templakan kode undangan dari teman atau guru
+                </div>
+              </button>
+            </div>
+          </div>
+        )}
+
         {modal.type === "createBranch" && (
           <form onSubmit={createBranch}>
             <h2>Buat Branch Baru</h2>

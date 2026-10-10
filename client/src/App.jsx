@@ -75,6 +75,15 @@ export default function App() {
     refreshBranches();
     refreshFriends();
 
+    // Check first-run: if user has no branches yet, show onboarding
+    api("/api/first-run")
+      .then((result) => {
+        if (result.isFirstRun) {
+          setModal({ type: "firstRun" });
+        }
+      })
+      .catch(() => {});
+
     // Kalau dibuka lewat link undangan (/invite/kode), buka dialog join
     const inviteMatch = location.pathname.match(/^\/invite\/([\w-]+)/);
     if (inviteMatch) {

@@ -181,6 +181,92 @@ Content-Type: application/json
 
 ---
 
+### GET /first-run
+
+**Description**: Check apakah user adalah first-time user (belum bergabung di branch manapun). Gunakan ini untuk mendeteksi perlu tampilkan onboarding modal.
+
+**Authentication**: Required
+
+**Response (200 OK)**:
+```json
+{
+  "isFirstRun": true,
+  "branchCount": 0
+}
+```
+
+**When isFirstRun = true**: User baru, belum ada di branch apapun → tampilkan modal onboarding ("Buat atau Bergabung")
+
+**When isFirstRun = false**: User sudah di satu atau lebih branch → skip onboarding, tampilkan normal UI
+
+**Errors**:
+- `401 Unauthorized`: Not authenticated
+
+---
+
+### GET /health
+
+**Description**: Health check endpoint untuk monitoring server status. Tidak memerlukan authentication. Cocok untuk uptime monitoring tools seperti Uptime Robot, Healthchecks.io, dll.
+
+**Authentication**: Not required
+
+**Response (200 OK)**:
+```json
+{
+  "status": "ok",
+  "timestamp": "2026-10-07T10:30:00.000Z",
+  "uptime": 3600,
+  "version": "0.1.0",
+  "environment": "production",
+  "database": {
+    "status": "connected",
+    "users": 125,
+    "branches": 8,
+    "messages": 3420,
+    "activeConnections": 12
+  },
+  "memory": {
+    "heapUsedMB": 45,
+    "heapTotalMB": 128
+  }
+}
+```
+
+**Response (503 Service Unavailable)** - saat database error:
+```json
+{
+  "status": "error",
+  "timestamp": "2026-10-07T10:30:00.000Z",
+  "message": "Database connection failed"
+}
+```
+
+**Use Cases**:
+- **Uptime Monitoring**: Polling `/health` setiap 5 menit
+- **Alerting**: Kalau response bukan 200, kirim alert ke admin
+- **Status Dashboard**: Display stats (users, branches, messages, active connections)
+- **Resource Planning**: Monitor memory usage trend untuk capacity planning
+
+**Example Monitoring Setup**:
+```bash
+# Uptime Robot
+# URL: https://brancher.sekolah.sch.id/api/health
+# Interval: 5 minutes
+# Alert: Email admin jika down
+
+# Shell script polling
+while true; do
+  status=$(curl -s -o /dev/null -w "%{http_code}" https://brancher.sekolah.sch.id/api/health)
+  if [ $status != "200" ]; then
+    echo "Alert: Brancher is down! Status: $status"
+    # sendmail admin@sekolah.sch.id ...
+  fi
+  sleep 300
+done
+```
+
+---
+
 ## 4. Branches Endpoints
 
 ### GET /branches
