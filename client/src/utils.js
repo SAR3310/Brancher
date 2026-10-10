@@ -14,8 +14,7 @@ export const EMOJIS = ["👍", "❤️", "😂", "😮", "😢", "🔥"];
 
 // Escape HTML lalu terapkan markdown sederhana + mention + autolink
 export function formatContent(text, myUsername) {
-  let html = text
-    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  let html = text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
   html = html.replace(/```([\s\S]+?)```/g, "<pre><code>$1</code></pre>");
   html = html.replace(/`([^`\n]+)`/g, "<code>$1</code>");
   html = html.replace(/\*\*([^*\n]+)\*\*/g, "<strong>$1</strong>");
@@ -25,7 +24,10 @@ export function formatContent(text, myUsername) {
     const cls = name === myUsername ? "mention mention-me" : "mention";
     return `<span class="${cls}">@${name}</span>`;
   });
-  html = html.replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1" target="_blank" rel="noopener">$1</a>');
+  html = html.replace(
+    /(https?:\/\/[^\s<]+)/g,
+    '<a href="$1" target="_blank" rel="noopener">$1</a>',
+  );
   return html;
 }
 
@@ -43,5 +45,8 @@ export function extractPreviews(text) {
 }
 
 export function timeStr(createdAt) {
-  return new Date(createdAt + "Z").toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" });
+  return new Date(createdAt + "Z").toLocaleTimeString("id-ID", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 }

@@ -5,17 +5,20 @@ Aplikasi chat komunitas real-time mirip Discord dengan Express.js backend dan Re
 ## 📋 Quick Start
 
 ### Prerequisites
+
 - **Node.js 22+** (built-in SQLite support)
 - **npm 11+**
 
 ### Setup
 
 1. **Install dependencies**
+
    ```bash
    npm install  # Installs both server and client
    ```
 
 2. **Configure environment (.env)**
+
    ```bash
    # File .env sudah tersedia dengan config default
    PORT=3000
@@ -25,12 +28,14 @@ Aplikasi chat komunitas real-time mirip Discord dengan Express.js backend dan Re
    ```
 
 3. **Run server (Terminal 1)**
+
    ```bash
    npm start
    # Server akan berjalan di http://localhost:3000
    ```
 
 4. **Run client dev server (Terminal 2)**
+
    ```bash
    cd client
    npm run dev
@@ -45,18 +50,21 @@ Aplikasi chat komunitas real-time mirip Discord dengan Express.js backend dan Re
 ## 🏗️ Architecture
 
 ### **Backend (Express.js + Socket.io)**
+
 - **File**: `server/index.js`, `server/db.js`, `server/helpers.js`
 - **Database**: SQLite (auto-initialized di `data/brancher.db`)
 - **Port**: 3000
 - **Real-time**: Socket.io untuk live messages, presence, typing indicator
 
 ### **Frontend (React + Vite)**
+
 - **Files**: `client/src/App.jsx`, `client/src/components/`
 - **Dev server**: Vite (proxy ke backend)
 - **Build output**: `client/dist/`
 - **Port**: 5173 (dev), 3000 (production)
 
 ### **Database Schema**
+
 ```
 users (id, username, email, password_hash, created_at)
 branches (id, name, description, invite_code, owner_id, created_at)
@@ -72,23 +80,27 @@ reactions (message_id, user_id, emoji)
 ## 🔑 Core Features
 
 ### **Authentication**
+
 - **Register**: Username + Email + Password (6+ chars, min 3 char username)
 - **Login**: Email atau Username + Password
 - **Session**: Persistent di SQLite, 30 hari expiry
 - **Rate limit**: 30 attempts per 15 min per IP
 
 ### **Branches** (komunitas)
+
 - Create branch (pembuat = owner)
 - Join via invite code
 - 3 default channels: pengumuman, umum, santai
 - Roles: owner (full control) | admin (manage channels) | member (read-only in announce)
 
 ### **Channels**
+
 - **Text**: bebas semua anggota
 - **Announce**: hanya staff yang bisa post
 - **Voice**: placeholder (UI ready)
 
 ### **Messages**
+
 - Kirim text + file attachment
 - Reactions (emoji)
 - Edit/Delete pesan (pemilik atau staff)
@@ -98,15 +110,18 @@ reactions (message_id, user_id, emoji)
 - Search messages in channel
 
 ### **Direct Messages (DM)**
+
 - Chat 1-on-1 dengan teman
 - Friendships: pending → accepted
 
 ### **Friends**
+
 - Add friend (request → accept)
 - View online status
 - Remove friend
 
 ### **Real-time Events** (Socket.io)
+
 - Message new/update/delete
 - Presence (online users)
 - Typing indicator
@@ -160,6 +175,7 @@ brancher/
 ## 🔗 API Endpoints
 
 ### **Auth**
+
 - `POST /api/register` - Register user
 - `POST /api/login` - Login
 - `POST /api/logout` - Logout
@@ -167,6 +183,7 @@ brancher/
 - `GET /api/auth/:provider` - OAuth (placeholder)
 
 ### **Branches**
+
 - `GET /api/branches` - List user's branches
 - `POST /api/branches` - Create branch
 - `GET /api/branches/:id` - Get branch detail
@@ -176,29 +193,36 @@ brancher/
 - `POST /api/invite/:code/join` - Join via invite
 
 ### **Channels**
+
 - `POST /api/branches/:id/channels` - Create channel (staff)
 - `DELETE /api/channels/:id` - Delete channel (staff)
 
 ### **Members**
+
 - `POST /api/branches/:id/members/:userId/role` - Change role (owner)
 
 ### **Messages**
+
 - `GET /api/messages/channel/:id` - Get channel messages
 - `GET /api/messages/dm/:otherId` - Get DM messages
 - `GET /api/messages/pinned/:channelId` - Get pinned messages
 - `GET /api/search?q=...&channel=...` - Search messages
 
 ### **Files**
+
 - `POST /api/upload` - Upload file
 
 ### **Friends**
+
 - `GET /api/friends` - List friends + requests
 - `POST /api/friends/request` - Send friend request
 - `POST /api/friends/:friendshipId/accept` - Accept request
 - `DELETE /api/friends/:friendshipId` - Reject/remove friend
 
 ### **Socket.io Events**
+
 **Client → Server:**
+
 - `message:channel` - Send channel message
 - `message:dm` - Send DM
 - `message:edit` - Edit message
@@ -210,6 +234,7 @@ brancher/
 - `typing` - Send typing indicator
 
 **Server → Client:**
+
 - `presence` - Online users list
 - `message:channel` - New channel message
 - `message:dm` - New DM
@@ -237,6 +262,7 @@ brancher/
 - ✅ CSRF protection via sessions
 
 **TODO untuk production:**
+
 - [ ] Ubah `SESSION_SECRET` ke string random panjang
 - [ ] Set `NODE_ENV=production`
 - [ ] Aktifkan HTTPS
@@ -249,12 +275,14 @@ brancher/
 ## 🐛 Known Issues & TODO
 
 ### **npm Vulnerabilities**
+
 - **Status**: Known, non-blocking
 - **Cause**: `sqlite3` package → `tar` dependency (build-time only)
 - **Impact**: None (server uses built-in `node:sqlite`)
 - **Fix**: Will be resolved when `connect-sqlite3` updates
 
 ### **Future Enhancements**
+
 - [ ] Voice/video chat integration
 - [ ] Message reactions & rich editing
 - [ ] Notification settings
@@ -285,12 +313,14 @@ Comprehensive documentation tersedia di `docs/`:
 ## 🚀 Deployment
 
 ### **Docker**
+
 ```bash
 docker build -t brancher .
 docker run -e PORT=3000 -e SESSION_SECRET=your-secret -v /data:/app/data brancher
 ```
 
 ### **Environment Variables (Production)**
+
 ```env
 PORT=3000
 NODE_ENV=production
@@ -299,14 +329,15 @@ DATA_DIR=/data  # Mount persistent volume
 ```
 
 ### **Nginx Proxy** (behind HTTPS reverse proxy)
+
 ```nginx
 server {
     listen 443 ssl;
     server_name brancher.example.com;
-    
+
     ssl_certificate /path/to/cert.pem;
     ssl_certificate_key /path/to/key.pem;
-    
+
     location / {
         proxy_pass http://localhost:3000;
         proxy_http_version 1.1;
@@ -335,6 +366,7 @@ server {
 ## 🔧 Development Commands
 
 **Root directory:**
+
 ```bash
 npm start              # Run server
 npm run build          # Build client
@@ -343,6 +375,7 @@ npm audit              # Check vulnerabilities
 ```
 
 **Client directory:**
+
 ```bash
 npm run dev            # Vite dev server
 npm run build          # Production build
@@ -365,6 +398,7 @@ npm run preview        # Preview production build
 ## 📞 Support
 
 Untuk issues atau questions, lihat struktur code:
+
 - Server logic: `server/index.js` (API endpoints)
 - Permission checks: `server/helpers.js`
 - Database: `server/db.js`

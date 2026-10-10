@@ -1,0 +1,30 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Lint (server)
+        run: npm run lint
+
+      - name: Client production build
+        run: npm run build
+
+      # Informatif saja (belum gate): ada 15 vuln pre-existing
+      # dari rantai sentry-node -> uuid, perbaikannya breaking change.
+      - name: Audit prod dependencies
+        run: npm audit --omit=dev
+        continue-on-error: true

@@ -36,7 +36,7 @@ const format = winston.format.combine(
   winston.format.timestamp({ format: "YYYY-MM-DD HH:mm:ss:ms" }),
   winston.format.errors({ stack: true }),
   winston.format.splat(),
-  winston.format.json()
+  winston.format.json(),
 );
 
 // Console format (readable untuk development)
@@ -45,7 +45,7 @@ const consoleFormat = winston.format.combine(
   winston.format.printf((info) => {
     const { timestamp, level, message, ...extra } = info;
     return `${timestamp} [${level}]: ${message} ${Object.keys(extra).length ? JSON.stringify(extra, null, 2) : ""}`;
-  })
+  }),
 );
 
 // Define transports
@@ -215,12 +215,12 @@ function logRateLimit(ip, endpoint, attempts) {
  */
 function httpLogger(req, res, next) {
   const start = Date.now();
-  
+
   res.on("finish", () => {
     const duration = Date.now() - start;
     logHttp(req.method, req.path, res.statusCode, duration, req.session?.userId);
   });
-  
+
   next();
 }
 

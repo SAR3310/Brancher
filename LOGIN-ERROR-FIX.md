@@ -14,6 +14,7 @@ Jika Anda mendapat error saat login/register, masalahnya kemungkinan:
 ## ✅ Solutions
 
 ### Solution 1: Refresh Browser (Most Common)
+
 ```
 Press: Ctrl + R  (or Ctrl + Shift + R for hard refresh)
 Or:    F5        (reload page)
@@ -24,6 +25,7 @@ Or:    F5        (reload page)
 ---
 
 ### Solution 2: Clear Browser Cache
+
 ```
 1. Open DevTools (F12)
 2. Go to "Application" tab
@@ -37,6 +39,7 @@ Or:    F5        (reload page)
 ---
 
 ### Solution 3: Check Backend is Running
+
 ```powershell
 # Check if backend port is listening
 netstat -ano | findstr :3000
@@ -48,6 +51,7 @@ netstat -ano | findstr :3000
 ---
 
 ### Solution 4: Restart Services
+
 ```powershell
 # Kill all Node processes
 Get-Process -Name node | Stop-Process -Force
@@ -76,19 +80,20 @@ Invoke-WebRequest -Uri "http://localhost:3000/api/me" -ErrorAction Stop
 
 ## 🐛 Common Causes & Fixes
 
-| Symptom | Cause | Fix |
-|---------|-------|-----|
-| "Terjadi kesalahan" on login | API not responding | Restart backend |
-| Error persists after refresh | Session issue | Clear browser cache |
-| Can't reach localhost:3000 | Backend crashed | Check PID, restart |
-| Database error | DB locked | Wait 10 sec, restart |
-| CORS error in console | Proxy misconfigured | Check vite.config.js |
+| Symptom                      | Cause               | Fix                  |
+| ---------------------------- | ------------------- | -------------------- |
+| "Terjadi kesalahan" on login | API not responding  | Restart backend      |
+| Error persists after refresh | Session issue       | Clear browser cache  |
+| Can't reach localhost:3000   | Backend crashed     | Check PID, restart   |
+| Database error               | DB locked           | Wait 10 sec, restart |
+| CORS error in console        | Proxy misconfigured | Check vite.config.js |
 
 ---
 
 ## 🔍 Debugging Steps
 
 ### Step 1: Check Services Running
+
 ```powershell
 Get-Process -Name node
 
@@ -97,12 +102,14 @@ Get-Process -Name node
 ```
 
 ### Step 2: Check Ports Listening
+
 ```powershell
 netstat -ano | findstr :3000  # Should show LISTENING
 netstat -ano | findstr :5173  # Should show LISTENING
 ```
 
 ### Step 3: Test API
+
 ```powershell
 # From PowerShell
 Invoke-WebRequest -Uri "http://localhost:3000" -ErrorAction Stop
@@ -112,6 +119,7 @@ Invoke-WebRequest -Uri "http://localhost:3000" -ErrorAction Stop
 ```
 
 ### Step 4: Check Browser Console
+
 ```
 1. Press F12 to open DevTools
 2. Go to "Console" tab
@@ -120,6 +128,7 @@ Invoke-WebRequest -Uri "http://localhost:3000" -ErrorAction Stop
 ```
 
 ### Step 5: Check Backend Logs
+
 ```
 1. Look at the backend command window (npm start)
 2. Look for error messages
@@ -179,18 +188,21 @@ If error at any step → "Terjadi kesalahan"
 ## 🆘 If All Else Fails
 
 1. **Kill everything**
+
    ```powershell
    Get-Process -Name node | Stop-Process -Force
    Get-Process -Name cmd | Stop-Process -Force
    ```
 
 2. **Delete database** (WARNING: Loses data)
+
    ```powershell
    Remove-Item -Path "data\brancher.db" -Force
    Remove-Item -Path "data\sessions.db" -Force
    ```
 
 3. **Restart fresh**
+
    ```powershell
    cd C:\Users\Kentaro\Documents\Hermes-Project\brancher
    .\run-brancher.ps1
@@ -205,6 +217,7 @@ If error at any step → "Terjadi kesalahan"
 ## 📞 Need More Help?
 
 Check these files:
+
 - `TROUBLESHOOTING.md` - General troubleshooting
 - `DEVELOPMENT.md` - Code structure
 - `NETWORK.md` - Network access issues

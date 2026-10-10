@@ -1,17 +1,40 @@
-import { IconHash, IconMegaphone, IconSpeaker, IconPlus, IconLink, IconLogout, IconLeave, IconTrash } from "./Icons.jsx";
+import {
+  IconHash,
+  IconMegaphone,
+  IconSpeaker,
+  IconPlus,
+  IconLink,
+  IconLogout,
+  IconLeave,
+  IconTrash,
+} from "./Icons.jsx";
 import { api } from "../utils";
 
 const CH_ICON = { text: IconHash, announce: IconMegaphone, voice: IconSpeaker };
 
-export default function BranchSidebar({ me, branch, activeChannel, unreadChannel, onSelectChannel, onShowInvite, onCreateChannel, onLeave, onDelete, onLogout }) {
+export default function BranchSidebar({
+  me,
+  branch,
+  activeChannel,
+  unreadChannel,
+  onSelectChannel,
+  onShowInvite,
+  onCreateChannel,
+  onLeave,
+  onDelete,
+  onLogout,
+}) {
   const isStaff = branch.myRole === "owner" || branch.myRole === "admin";
 
   async function deleteChannel(ch, e) {
     e.preventDefault();
     if (!isStaff) return;
     if (confirm(`Hapus channel #${ch.name}? Semua pesannya ikut terhapus.`)) {
-      try { await api("/api/channels/" + ch.id, "DELETE"); }
-      catch (err) { alert(err.message); }
+      try {
+        await api("/api/channels/" + ch.id, "DELETE");
+      } catch (err) {
+        alert(err.message);
+      }
     }
   }
 
@@ -20,16 +43,28 @@ export default function BranchSidebar({ me, branch, activeChannel, unreadChannel
       <div className="sidebar-header">
         <span className="sidebar-title">{branch.name}</span>
         <div className="sidebar-header-actions">
-          <button onClick={onShowInvite} title="Link undangan"><IconLink size={15} /></button>
-          {branch.myRole === "owner"
-            ? <button onClick={onDelete} title="Hapus branch" className="danger"><IconTrash size={15} /></button>
-            : <button onClick={onLeave} title="Keluar dari branch" className="danger"><IconLeave size={15} /></button>}
+          <button onClick={onShowInvite} title="Link undangan">
+            <IconLink size={15} />
+          </button>
+          {branch.myRole === "owner" ? (
+            <button onClick={onDelete} title="Hapus branch" className="danger">
+              <IconTrash size={15} />
+            </button>
+          ) : (
+            <button onClick={onLeave} title="Keluar dari branch" className="danger">
+              <IconLeave size={15} />
+            </button>
+          )}
         </div>
       </div>
 
       <div className="section-title">
         CHANNEL
-        {isStaff && <button onClick={onCreateChannel} title="Buat channel"><IconPlus size={15} /></button>}
+        {isStaff && (
+          <button onClick={onCreateChannel} title="Buat channel">
+            <IconPlus size={15} />
+          </button>
+        )}
       </div>
       <ul className="list">
         {branch.channels.map((ch) => {
@@ -38,7 +73,9 @@ export default function BranchSidebar({ me, branch, activeChannel, unreadChannel
           return (
             <li
               key={ch.id}
-              className={(activeChannel?.id === ch.id ? "active" : "") + (isVoice ? " voice-disabled" : "")}
+              className={
+                (activeChannel?.id === ch.id ? "active" : "") + (isVoice ? " voice-disabled" : "")
+              }
               onClick={() => !isVoice && onSelectChannel(ch)}
               onContextMenu={(e) => deleteChannel(ch, e)}
               title={isVoice ? "Voice channel segera hadir" : ch.name}
@@ -56,7 +93,9 @@ export default function BranchSidebar({ me, branch, activeChannel, unreadChannel
         <span className="online-dot" />
         <span className="me-name">{me.username}</span>
         <span className="role-badge">{branch.myRole.toUpperCase()}</span>
-        <button onClick={onLogout} title="Keluar akun"><IconLogout size={15} /></button>
+        <button onClick={onLogout} title="Keluar akun">
+          <IconLogout size={15} />
+        </button>
       </div>
     </aside>
   );

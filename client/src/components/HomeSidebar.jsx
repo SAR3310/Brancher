@@ -1,7 +1,15 @@
 import { IconLogout } from "./Icons.jsx";
 
 // Sidebar saat di "Beranda": daftar teman untuk DM
-export default function HomeSidebar({ me, friends, onlineIds, activeDM, unreadDM, onSelectDM, onLogout }) {
+export default function HomeSidebar({
+  me,
+  friends,
+  onlineIds,
+  activeDM,
+  unreadDM,
+  onSelectDM,
+  onLogout,
+}) {
   const accepted = friends.filter((f) => f.status === "accepted");
   return (
     <aside className="sidebar">
@@ -10,7 +18,13 @@ export default function HomeSidebar({ me, friends, onlineIds, activeDM, unreadDM
       </div>
       <div className="section-title">DIRECT MESSAGE</div>
       <ul className="list">
-        {accepted.length === 0 && <li className="muted-item">Belum ada teman.<br />Tambahkan lewat tab Teman →</li>}
+        {accepted.length === 0 && (
+          <li className="muted-item">
+            Belum ada teman.
+            <br />
+            Tambahkan lewat tab Teman →
+          </li>
+        )}
         {accepted.map((f) => (
           <li
             key={f.userId}
@@ -26,7 +40,9 @@ export default function HomeSidebar({ me, friends, onlineIds, activeDM, unreadDM
       <div className="me-bar">
         <span className="online-dot" />
         <span className="me-name">{me.username}</span>
-        <button onClick={onLogout} title="Keluar akun"><IconLogout size={15} /></button>
+        <button onClick={onLogout} title="Keluar akun">
+          <IconLogout size={15} />
+        </button>
       </div>
     </aside>
   );

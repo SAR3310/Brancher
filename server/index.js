@@ -22,7 +22,8 @@ const { db, DATA_DIR, UPLOAD_DIR } = require("./db");
 const H = require("./helpers");
 const V = require("./validation");
 const { z } = require("zod");
-const { logger, logHttp, logAuth, logEvent, logError, logPermissionDenied, httpLogger } = require("./logger");
+const { logAuth, logEvent, logError, logPermissionDenied, httpLogger } = require("./logger");
+const { getTemplate } = require("./templates");
 
 const app = express();
 const server = http.createServer(app);
@@ -81,31 +82,34 @@ function requireLogin(req, res, next) {
 // ============================================================
 app.post("/api/register", authLimiter, V.validateBody(V.RegisterSchema), (req, res) => {
   const { username, email, password } = req.validated;
-  
+
   // Check duplicate username
   if (db.prepare("SELECT id FROM users WHERE username = ?").get(username)) {
     logAuth("failed_register", null, username, email, { reason: "username_taken" });
     return res.status(400).json({ error: "Username sudah dipakai" });
   }
-  
+
   // Check duplicate email
   if (db.prepare("SELECT id FROM users WHERE email = ?").get(email)) {
     logAuth("failed_register", null, username, email, { reason: "email_taken" });
     return res.status(400).json({ error: "Email sudah terdaftar" });
   }
-  
+
   const hash = bcrypt.hashSync(password, 10);
-  const r = db.prepare("INSERT INTO users (username, email, password_hash) VALUES (?, ?, ?)").run(username, email, hash);
+  const r = db
+    .prepare("INSERT INTO users (username, email, password_hash) VALUES (?, ?, ?)")
+    .run(username, email, hash);
   req.session.userId = Number(r.lastInsertRowid);
   req.session.username = username;
   logAuth("register", req.session.userId, username, email, { ip: req.ip });
   res.json({ id: req.session.userId, username });
 });
 
-
 app.post("/api/login", authLimiter, V.validateBody(V.LoginSchema), (req, res) => {
   const { email: identifier, password } = req.validated; // email field bisa berisi email atau username
-  const user = db.prepare("SELECT * FROM users WHERE username = ? OR email = ?").get(identifier, identifier);
+  const user = db
+    .prepare("SELECT * FROM users WHERE username = ? OR email = ?")
+    .get(identifier, identifier);
   if (!user || !bcrypt.compareSync(password || "", user.password_hash)) {
     logAuth("failed_login", null, identifier, null, { ip: req.ip });
     return res.status(401).json({ error: "Akun atau password salah" });
@@ -131,42 +135,75 @@ app.get("/api/me", requireLogin, (req, res) => {
 
 // Placeholder OAuth: nanti diaktifkan setelah deploy
 app.get("/api/auth/:provider", (req, res) => {
-  res.status(501).json({ error: "Login " + req.params.provider + " akan tersedia setelah aplikasi online" });
+  res
+    .status(501)
+    .json({ error: "Login " + req.params.provider + " akan tersedia setelah aplikasi online" });
 });
 
 // ============================================================
 // BRANCH
 // ============================================================
+// Daftar template yang tersedia untuk branch baru
+app.get("/api/branch-templates", requireLogin, (req, res) => {
+  const { getAvailableTemplates } = require("./templates");
+  res.json(getAvailableTemplates());
+});
+
 // Daftar branch yang saya ikuti
 app.get("/api/branches", requireLogin, (req, res) => {
-  const rows = db.prepare(`
+  const rows = db
+    .prepare(
+      `
     SELECT b.*, m.role FROM branches b
     JOIN memberships m ON m.branch_id = b.id
     WHERE m.user_id = ? ORDER BY m.created_at
-  `).all(req.session.userId);
+  `,
+    )
+    .all(req.session.userId);
   res.json(rows);
 });
 
-// Buat branch baru (pembuat jadi owner, channel default dibuat)
+// Buat branch baru (pembuat jadi owner, channels dari template)
 app.post("/api/branches", requireLogin, V.validateBody(V.CreateBranchSchema), (req, res) => {
-  const { name, description } = req.validated;
+  const { name, description, template } = req.validated;
   const invite = nanoid(8);
-  const r = db.prepare("INSERT INTO branches (name, description, invite_code, owner_id) VALUES (?, ?, ?, ?)").run(name, description, invite, req.session.userId);
+  const r = db
+    .prepare("INSERT INTO branches (name, description, invite_code, owner_id) VALUES (?, ?, ?, ?)")
+    .run(name, description, invite, req.session.userId);
   const branchId = Number(r.lastInsertRowid);
-  db.prepare("INSERT INTO memberships (user_id, branch_id, role) VALUES (?, ?, 'owner')").run(req.session.userId, branchId);
-  const insCh = db.prepare("INSERT INTO channels (branch_id, name, type, position) VALUES (?, ?, ?, ?)");
-  insCh.run(branchId, "pengumuman", "announce", 0);
-  insCh.run(branchId, "umum", "text", 1);
-  insCh.run(branchId, "santai", "text", 2);
-  logEvent("branch_created", req.session.userId, { branchId, name, inviteCode: invite });
+  db.prepare("INSERT INTO memberships (user_id, branch_id, role) VALUES (?, ?, 'owner')").run(
+    req.session.userId,
+    branchId,
+  );
+
+  // Apply template channels
+  const tmpl = getTemplate(template || "empty");
+  const insCh = db.prepare(
+    "INSERT INTO channels (branch_id, name, type, position) VALUES (?, ?, ?, ?)",
+  );
+  for (const ch of tmpl.channels) {
+    insCh.run(branchId, ch.name, ch.type, ch.position);
+  }
+
+  logEvent("branch_created", req.session.userId, {
+    branchId,
+    name,
+    inviteCode: invite,
+    template: template || "empty",
+    channelCount: tmpl.channels.length,
+  });
   res.json(db.prepare("SELECT * FROM branches WHERE id = ?").get(branchId));
 });
 
 // Info undangan (tanpa join dulu — untuk halaman preview)
 app.get("/api/invite/:code", requireLogin, (req, res) => {
-  const b = db.prepare("SELECT id, name, description FROM branches WHERE invite_code = ?").get(req.params.code);
+  const b = db
+    .prepare("SELECT id, name, description FROM branches WHERE invite_code = ?")
+    .get(req.params.code);
   if (!b) return res.status(404).json({ error: "Link undangan tidak valid" });
-  const members = db.prepare("SELECT COUNT(*) AS c FROM memberships WHERE branch_id = ?").get(b.id).c;
+  const members = db
+    .prepare("SELECT COUNT(*) AS c FROM memberships WHERE branch_id = ?")
+    .get(b.id).c;
   const joined = !!H.branchRole(req.session.userId, b.id);
   res.json({ ...b, members, joined });
 });
@@ -175,8 +212,12 @@ app.get("/api/invite/:code", requireLogin, (req, res) => {
 app.post("/api/invite/:code/join", requireLogin, (req, res) => {
   const b = db.prepare("SELECT * FROM branches WHERE invite_code = ?").get(req.params.code);
   if (!b) return res.status(404).json({ error: "Link undangan tidak valid" });
-  if (H.branchRole(req.session.userId, b.id)) return res.status(400).json({ error: "Sudah bergabung" });
-  db.prepare("INSERT INTO memberships (user_id, branch_id, role) VALUES (?, ?, 'member')").run(req.session.userId, b.id);
+  if (H.branchRole(req.session.userId, b.id))
+    return res.status(400).json({ error: "Sudah bergabung" });
+  db.prepare("INSERT INTO memberships (user_id, branch_id, role) VALUES (?, ?, 'member')").run(
+    req.session.userId,
+    b.id,
+  );
   io.to("branch:" + b.id).emit("branch:members-changed", { branchId: b.id });
   res.json({ ...b, role: "member" });
 });
@@ -187,23 +228,37 @@ app.get("/api/branches/:id", requireLogin, (req, res) => {
   const role = H.branchRole(req.session.userId, branchId);
   if (!role) return res.status(403).json({ error: "Bukan anggota branch ini" });
   const branch = db.prepare("SELECT * FROM branches WHERE id = ?").get(branchId);
-  const channels = db.prepare("SELECT * FROM channels WHERE branch_id = ? ORDER BY position, id").all(branchId);
-  const members = db.prepare(`
+  const channels = db
+    .prepare("SELECT * FROM channels WHERE branch_id = ? ORDER BY position, id")
+    .all(branchId);
+  const members = db
+    .prepare(
+      `
     SELECT u.id, u.username, m.role FROM memberships m
     JOIN users u ON u.id = m.user_id WHERE m.branch_id = ?
     ORDER BY CASE m.role WHEN 'owner' THEN 0 WHEN 'admin' THEN 1 ELSE 2 END, u.username
-  `).all(branchId);
+  `,
+    )
+    .all(branchId);
   res.json({ ...branch, myRole: role, channels, members });
 });
 
 // Buat channel (staff saja)
 app.post("/api/branches/:id/channels", requireLogin, (req, res) => {
   const branchId = Number(req.params.id);
-  if (!H.isBranchStaff(req.session.userId, branchId)) return res.status(403).json({ error: "Hanya admin branch" });
-  const name = (req.body.name || "").toLowerCase().trim().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "").slice(0, 30);
+  if (!H.isBranchStaff(req.session.userId, branchId))
+    return res.status(403).json({ error: "Hanya admin branch" });
+  const name = (req.body.name || "")
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, "-")
+    .replace(/[^a-z0-9-]/g, "")
+    .slice(0, 30);
   const type = ["text", "announce", "voice"].includes(req.body.type) ? req.body.type : "text";
   if (!name) return res.status(400).json({ error: "Nama channel tidak valid" });
-  const r = db.prepare("INSERT INTO channels (branch_id, name, type, position) VALUES (?, ?, ?, 99)").run(branchId, name, type);
+  const r = db
+    .prepare("INSERT INTO channels (branch_id, name, type, position) VALUES (?, ?, ?, 99)")
+    .run(branchId, name, type);
   const ch = db.prepare("SELECT * FROM channels WHERE id = ?").get(Number(r.lastInsertRowid));
   io.to("branch:" + branchId).emit("channel:new", ch);
   res.json(ch);
@@ -213,7 +268,8 @@ app.post("/api/branches/:id/channels", requireLogin, (req, res) => {
 app.delete("/api/channels/:id", requireLogin, (req, res) => {
   const ch = db.prepare("SELECT * FROM channels WHERE id = ?").get(Number(req.params.id));
   if (!ch) return res.status(404).json({ error: "Channel tidak ada" });
-  if (!H.isBranchStaff(req.session.userId, ch.branch_id)) return res.status(403).json({ error: "Hanya admin branch" });
+  if (!H.isBranchStaff(req.session.userId, ch.branch_id))
+    return res.status(403).json({ error: "Hanya admin branch" });
   db.prepare("DELETE FROM messages WHERE channel_id = ?").run(ch.id);
   db.prepare("DELETE FROM channels WHERE id = ?").run(ch.id);
   io.to("branch:" + ch.branch_id).emit("channel:deleted", { id: ch.id, branchId: ch.branch_id });
@@ -224,10 +280,16 @@ app.delete("/api/channels/:id", requireLogin, (req, res) => {
 app.post("/api/branches/:id/members/:userId/role", requireLogin, (req, res) => {
   const branchId = Number(req.params.id);
   const targetId = Number(req.params.userId);
-  if (H.branchRole(req.session.userId, branchId) !== "owner") return res.status(403).json({ error: "Hanya owner" });
-  if (targetId === req.session.userId) return res.status(400).json({ error: "Tidak bisa mengubah role sendiri" });
+  if (H.branchRole(req.session.userId, branchId) !== "owner")
+    return res.status(403).json({ error: "Hanya owner" });
+  if (targetId === req.session.userId)
+    return res.status(400).json({ error: "Tidak bisa mengubah role sendiri" });
   const role = req.body.role === "admin" ? "admin" : "member";
-  db.prepare("UPDATE memberships SET role = ? WHERE user_id = ? AND branch_id = ?").run(role, targetId, branchId);
+  db.prepare("UPDATE memberships SET role = ? WHERE user_id = ? AND branch_id = ?").run(
+    role,
+    targetId,
+    branchId,
+  );
   io.to("branch:" + branchId).emit("branch:members-changed", { branchId });
   res.json({ ok: true });
 });
@@ -237,8 +299,14 @@ app.post("/api/branches/:id/leave", requireLogin, (req, res) => {
   const branchId = Number(req.params.id);
   const role = H.branchRole(req.session.userId, branchId);
   if (!role) return res.status(400).json({ error: "Bukan anggota" });
-  if (role === "owner") return res.status(400).json({ error: "Owner tidak bisa keluar. Hapus branch jika ingin menutupnya." });
-  db.prepare("DELETE FROM memberships WHERE user_id = ? AND branch_id = ?").run(req.session.userId, branchId);
+  if (role === "owner")
+    return res
+      .status(400)
+      .json({ error: "Owner tidak bisa keluar. Hapus branch jika ingin menutupnya." });
+  db.prepare("DELETE FROM memberships WHERE user_id = ? AND branch_id = ?").run(
+    req.session.userId,
+    branchId,
+  );
   io.to("branch:" + branchId).emit("branch:members-changed", { branchId });
   res.json({ ok: true });
 });
@@ -246,8 +314,12 @@ app.post("/api/branches/:id/leave", requireLogin, (req, res) => {
 // Hapus branch (owner saja)
 app.delete("/api/branches/:id", requireLogin, (req, res) => {
   const branchId = Number(req.params.id);
-  if (H.branchRole(req.session.userId, branchId) !== "owner") return res.status(403).json({ error: "Hanya owner" });
-  const chIds = db.prepare("SELECT id FROM channels WHERE branch_id = ?").all(branchId).map((c) => c.id);
+  if (H.branchRole(req.session.userId, branchId) !== "owner")
+    return res.status(403).json({ error: "Hanya owner" });
+  const chIds = db
+    .prepare("SELECT id FROM channels WHERE branch_id = ?")
+    .all(branchId)
+    .map((c) => c.id);
   for (const id of chIds) db.prepare("DELETE FROM messages WHERE channel_id = ?").run(id);
   db.prepare("DELETE FROM channels WHERE branch_id = ?").run(branchId);
   db.prepare("DELETE FROM memberships WHERE branch_id = ?").run(branchId);
@@ -261,54 +333,81 @@ app.delete("/api/branches/:id", requireLogin, (req, res) => {
 // ============================================================
 app.get("/api/friends", requireLogin, (req, res) => {
   const uid = req.session.userId;
-  const rows = db.prepare(`
+  const rows = db
+    .prepare(
+      `
     SELECT f.id, f.status, f.requester_id,
       u.id AS user_id, u.username
     FROM friendships f
     JOIN users u ON u.id = CASE WHEN f.requester_id = ? THEN f.addressee_id ELSE f.requester_id END
     WHERE f.requester_id = ? OR f.addressee_id = ?
-  `).all(uid, uid, uid);
-  res.json(rows.map((r) => ({
-    friendshipId: r.id,
-    userId: r.user_id,
-    username: r.username,
-    status: r.status,
-    incoming: r.status === "pending" && r.requester_id !== uid,
-  })));
+  `,
+    )
+    .all(uid, uid, uid);
+  res.json(
+    rows.map((r) => ({
+      friendshipId: r.id,
+      userId: r.user_id,
+      username: r.username,
+      status: r.status,
+      incoming: r.status === "pending" && r.requester_id !== uid,
+    })),
+  );
 });
 
 app.post("/api/friends/request", requireLogin, (req, res) => {
-  const target = db.prepare("SELECT id, username FROM users WHERE username = ?").get((req.body.username || "").trim());
+  const target = db
+    .prepare("SELECT id, username FROM users WHERE username = ?")
+    .get((req.body.username || "").trim());
   if (!target) return res.status(404).json({ error: "User tidak ditemukan" });
-  if (target.id === req.session.userId) return res.status(400).json({ error: "Tidak bisa menambahkan diri sendiri" });
-  const existing = db.prepare(`
+  if (target.id === req.session.userId)
+    return res.status(400).json({ error: "Tidak bisa menambahkan diri sendiri" });
+  const existing = db
+    .prepare(
+      `
     SELECT * FROM friendships
     WHERE (requester_id = ? AND addressee_id = ?) OR (requester_id = ? AND addressee_id = ?)
-  `).get(req.session.userId, target.id, target.id, req.session.userId);
-  if (existing) return res.status(400).json({ error: existing.status === "accepted" ? "Sudah berteman" : "Permintaan sudah ada" });
-  db.prepare("INSERT INTO friendships (requester_id, addressee_id) VALUES (?, ?)").run(req.session.userId, target.id);
+  `,
+    )
+    .get(req.session.userId, target.id, target.id, req.session.userId);
+  if (existing)
+    return res
+      .status(400)
+      .json({ error: existing.status === "accepted" ? "Sudah berteman" : "Permintaan sudah ada" });
+  db.prepare("INSERT INTO friendships (requester_id, addressee_id) VALUES (?, ?)").run(
+    req.session.userId,
+    target.id,
+  );
   io.to("user:" + target.id).emit("friends:changed");
   res.json({ ok: true });
 });
 
 app.post("/api/friends/:friendshipId/accept", requireLogin, (req, res) => {
-  const f = db.prepare("SELECT * FROM friendships WHERE id = ?").get(Number(req.params.friendshipId));
+  const f = db
+    .prepare("SELECT * FROM friendships WHERE id = ?")
+    .get(Number(req.params.friendshipId));
   if (!f || f.addressee_id !== req.session.userId || f.status !== "pending") {
     return res.status(400).json({ error: "Permintaan tidak valid" });
   }
   db.prepare("UPDATE friendships SET status = 'accepted' WHERE id = ?").run(f.id);
-  io.to("user:" + f.requester_id).to("user:" + f.addressee_id).emit("friends:changed");
+  io.to("user:" + f.requester_id)
+    .to("user:" + f.addressee_id)
+    .emit("friends:changed");
   res.json({ ok: true });
 });
 
 // Tolak permintaan / hapus teman
 app.delete("/api/friends/:friendshipId", requireLogin, (req, res) => {
-  const f = db.prepare("SELECT * FROM friendships WHERE id = ?").get(Number(req.params.friendshipId));
+  const f = db
+    .prepare("SELECT * FROM friendships WHERE id = ?")
+    .get(Number(req.params.friendshipId));
   if (!f || (f.requester_id !== req.session.userId && f.addressee_id !== req.session.userId)) {
     return res.status(400).json({ error: "Tidak valid" });
   }
   db.prepare("DELETE FROM friendships WHERE id = ?").run(f.id);
-  io.to("user:" + f.requester_id).to("user:" + f.addressee_id).emit("friends:changed");
+  io.to("user:" + f.requester_id)
+    .to("user:" + f.addressee_id)
+    .emit("friends:changed");
   res.json({ ok: true });
 });
 
@@ -319,23 +418,30 @@ app.get("/api/messages/channel/:id", requireLogin, (req, res) => {
   const ch = H.channelForMember(Number(req.params.id), req.session.userId);
   if (!ch) return res.status(403).json({ error: "Tidak punya akses" });
   const before = Number(req.query.before) || Number.MAX_SAFE_INTEGER;
-  const rows = db.prepare(H.MSG_SELECT + " WHERE m.channel_id = ? AND m.id < ? ORDER BY m.id DESC LIMIT 50").all(ch.id, before);
+  const rows = db
+    .prepare(H.MSG_SELECT + " WHERE m.channel_id = ? AND m.id < ? ORDER BY m.id DESC LIMIT 50")
+    .all(ch.id, before);
   res.json(H.attachReactions(rows.reverse()));
 });
 
 app.get("/api/messages/dm/:otherId", requireLogin, (req, res) => {
   const otherId = Number(req.params.otherId);
-  if (!H.areFriends(req.session.userId, otherId)) return res.status(403).json({ error: "Hanya bisa DM dengan teman" });
+  if (!H.areFriends(req.session.userId, otherId))
+    return res.status(403).json({ error: "Hanya bisa DM dengan teman" });
   const before = Number(req.query.before) || Number.MAX_SAFE_INTEGER;
   const key = H.dmKey(req.session.userId, otherId);
-  const rows = db.prepare(H.MSG_SELECT + " WHERE m.dm_key = ? AND m.id < ? ORDER BY m.id DESC LIMIT 50").all(key, before);
+  const rows = db
+    .prepare(H.MSG_SELECT + " WHERE m.dm_key = ? AND m.id < ? ORDER BY m.id DESC LIMIT 50")
+    .all(key, before);
   res.json(H.attachReactions(rows.reverse()));
 });
 
 app.get("/api/messages/pinned/:channelId", requireLogin, (req, res) => {
   const ch = H.channelForMember(Number(req.params.channelId), req.session.userId);
   if (!ch) return res.status(403).json({ error: "Tidak punya akses" });
-  const rows = db.prepare(H.MSG_SELECT + " WHERE m.channel_id = ? AND m.pinned = 1 ORDER BY m.id DESC").all(ch.id);
+  const rows = db
+    .prepare(H.MSG_SELECT + " WHERE m.channel_id = ? AND m.pinned = 1 ORDER BY m.id DESC")
+    .all(ch.id);
   res.json(H.attachReactions(rows));
 });
 
@@ -343,11 +449,12 @@ app.get("/api/search", requireLogin, V.validateQuery(V.SearchMessagesSchema), (r
   const { q, channel } = req.validated;
   const ch = channel ? H.channelForMember(channel, req.session.userId) : null;
   if (!ch && channel) return res.json([]);
-  
+
   const query = ch
     ? H.MSG_SELECT + " WHERE m.channel_id = ? AND m.content LIKE ? ORDER BY m.id DESC LIMIT 30"
-    : H.MSG_SELECT + " WHERE m.user_id = ? AND m.content LIKE ? AND m.channel_id IS NOT NULL ORDER BY m.id DESC LIMIT 30";
-  
+    : H.MSG_SELECT +
+      " WHERE m.user_id = ? AND m.content LIKE ? AND m.channel_id IS NOT NULL ORDER BY m.id DESC LIMIT 30";
+
   const params = ch ? [ch.id, `%${q}%`] : [req.session.userId, `%${q}%`];
   const rows = db.prepare(query).all(...params);
   res.json(H.attachReactions(rows));
@@ -355,7 +462,7 @@ app.get("/api/search", requireLogin, V.validateQuery(V.SearchMessagesSchema), (r
 
 app.post("/api/upload", requireLogin, upload.single("file"), (req, res) => {
   if (!req.file) return res.status(400).json({ error: "Tidak ada file" });
-  
+
   // Validate file
   try {
     V.FileUploadSchema.parse({
@@ -368,7 +475,7 @@ app.post("/api/upload", requireLogin, upload.single("file"), (req, res) => {
     }
     return res.status(400).json({ error: "Validasi file gagal" });
   }
-  
+
   res.json({ url: "/uploads/" + req.file.filename, name: req.file.originalname });
 });
 
@@ -404,7 +511,9 @@ io.on("connection", (socket) => {
     if (msg.channel_id) io.to("channel:" + msg.channel_id).emit(event, msg);
     else if (msg.dm_key) {
       const [a, b] = msg.dm_key.split("-");
-      io.to("user:" + a).to("user:" + b).emit(event, msg);
+      io.to("user:" + a)
+        .to("user:" + b)
+        .emit(event, msg);
     }
   }
 
@@ -412,32 +521,59 @@ io.on("connection", (socket) => {
   socket.on("message:channel", ({ channelId, content, fileUrl, fileName, replyTo }) => {
     // Validate message
     try {
-      V.SendMessageSchema.parse({ content, reply_to: replyTo, file_url: fileUrl, file_name: fileName });
+      V.SendMessageSchema.parse({
+        content,
+        reply_to: replyTo,
+        file_url: fileUrl,
+        file_name: fileName,
+      });
     } catch (error) {
-      logError(new Error(error.errors?.[0]?.message), "message:channel validation", { userId, channelId });
-      return socket.emit("error", { message: error.errors?.[0]?.message || "Validasi pesan gagal" });
+      logError(new Error(error.errors?.[0]?.message), "message:channel validation", {
+        userId,
+        channelId,
+      });
+      return socket.emit("error", {
+        message: error.errors?.[0]?.message || "Validasi pesan gagal",
+      });
     }
-    
+
     if (!content && !fileUrl) return;
     const ch = H.channelForMember(channelId, userId);
     if (!ch || ch.type === "voice") return;
     // Announce channel: hanya staff yang boleh kirim
     if (ch.type === "announce" && !H.isBranchStaff(userId, ch.branch_id)) {
-      logPermissionDenied(userId, "send_message", `channel:${channelId}`, { type: "announce_channel" });
+      logPermissionDenied(userId, "send_message", `channel:${channelId}`, {
+        type: "announce_channel",
+      });
       return;
     }
-    
+
     // Sanitize content untuk XSS prevention
     const sanitized = V.sanitizeContent(content);
-    
-    const r = db.prepare(
-      "INSERT INTO messages (channel_id, user_id, content, file_url, file_name, reply_to) VALUES (?, ?, ?, ?, ?, ?)"
-    ).run(channelId, userId, sanitized || null, fileUrl || null, fileName || null, replyTo || null);
+
+    const r = db
+      .prepare(
+        "INSERT INTO messages (channel_id, user_id, content, file_url, file_name, reply_to) VALUES (?, ?, ?, ?, ?, ?)",
+      )
+      .run(
+        channelId,
+        userId,
+        sanitized || null,
+        fileUrl || null,
+        fileName || null,
+        replyTo || null,
+      );
     const messageId = Number(r.lastInsertRowid);
     const msg = H.getMessage(messageId);
     logEvent("message_sent", userId, { messageId, channelId, hasFile: !!fileUrl });
     io.to("channel:" + channelId).emit("message:channel", msg);
-    io.to("branch:" + ch.branch_id).emit("activity", { type: "channel", id: channelId, branchId: ch.branch_id, from: userId, mentions: extractMentions(sanitized) });
+    io.to("branch:" + ch.branch_id).emit("activity", {
+      type: "channel",
+      id: channelId,
+      branchId: ch.branch_id,
+      from: userId,
+      mentions: extractMentions(sanitized),
+    });
   });
 
   // --- pesan DM (hanya antar teman) ---
@@ -445,11 +581,15 @@ io.on("connection", (socket) => {
     if (!content && !fileUrl) return;
     if (!H.areFriends(userId, toUserId)) return;
     const key = H.dmKey(userId, toUserId);
-    const r = db.prepare(
-      "INSERT INTO messages (dm_key, user_id, content, file_url, file_name, reply_to) VALUES (?, ?, ?, ?, ?, ?)"
-    ).run(key, userId, content || null, fileUrl || null, fileName || null, replyTo || null);
+    const r = db
+      .prepare(
+        "INSERT INTO messages (dm_key, user_id, content, file_url, file_name, reply_to) VALUES (?, ?, ?, ?, ?, ?)",
+      )
+      .run(key, userId, content || null, fileUrl || null, fileName || null, replyTo || null);
     const msg = H.getMessage(Number(r.lastInsertRowid));
-    io.to("user:" + userId).to("user:" + toUserId).emit("message:dm", msg);
+    io.to("user:" + userId)
+      .to("user:" + toUserId)
+      .emit("message:dm", msg);
     io.to("user:" + toUserId).emit("activity", { type: "dm", id: userId, from: userId });
   });
 
@@ -481,7 +621,9 @@ io.on("connection", (socket) => {
     if (m.channel_id) io.to("channel:" + m.channel_id).emit("message:deleted", info);
     else if (m.dm_key) {
       const [a, b] = m.dm_key.split("-");
-      io.to("user:" + a).to("user:" + b).emit("message:deleted", info);
+      io.to("user:" + a)
+        .to("user:" + b)
+        .emit("message:deleted", info);
     }
     const replies = db.prepare("SELECT id FROM messages WHERE reply_to = ?").all(messageId);
     for (const r of replies) broadcastMessage("message:updated", H.getMessage(r.id));
@@ -490,9 +632,21 @@ io.on("connection", (socket) => {
   // --- reaksi ---
   socket.on("message:react", ({ messageId, emoji }) => {
     if (!emoji || emoji.length > 8) return;
-    const exists = db.prepare("SELECT 1 FROM reactions WHERE message_id = ? AND user_id = ? AND emoji = ?").get(messageId, userId, emoji);
-    if (exists) db.prepare("DELETE FROM reactions WHERE message_id = ? AND user_id = ? AND emoji = ?").run(messageId, userId, emoji);
-    else db.prepare("INSERT INTO reactions (message_id, user_id, emoji) VALUES (?, ?, ?)").run(messageId, userId, emoji);
+    const exists = db
+      .prepare("SELECT 1 FROM reactions WHERE message_id = ? AND user_id = ? AND emoji = ?")
+      .get(messageId, userId, emoji);
+    if (exists)
+      db.prepare("DELETE FROM reactions WHERE message_id = ? AND user_id = ? AND emoji = ?").run(
+        messageId,
+        userId,
+        emoji,
+      );
+    else
+      db.prepare("INSERT INTO reactions (message_id, user_id, emoji) VALUES (?, ?, ?)").run(
+        messageId,
+        userId,
+        emoji,
+      );
     broadcastMessage("message:updated", H.getMessage(messageId));
   });
 
@@ -545,5 +699,7 @@ const HOST = process.env.HOST || "0.0.0.0";
 server.listen(PORT, HOST, () => {
   console.log(`Brancher berjalan di http://0.0.0.0:${PORT}`);
   console.log(`Akses lokal: http://localhost:${PORT}`);
-  console.log(`Akses network: http://${require("os").networkInterfaces()["Ethernet"]?.[0]?.address || "your-ip"}:${PORT}`);
+  console.log(
+    `Akses network: http://${require("os").networkInterfaces()["Ethernet"]?.[0]?.address || "your-ip"}:${PORT}`,
+  );
 });

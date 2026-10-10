@@ -3,3 +3,5 @@ client/node_modules/
 client/dist/
 data/
 .env
+nul
+logs/

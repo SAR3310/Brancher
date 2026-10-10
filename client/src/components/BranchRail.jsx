@@ -1,7 +1,15 @@
 import { IconPlus, IconLink } from "./Icons.jsx";
 
 // Kolom paling kiri: daftar ikon Branch (seperti server rail Discord)
-export default function BranchRail({ branches, activeBranchId, unreadBranch, onHome, onSelect, onCreate, onJoin }) {
+export default function BranchRail({
+  branches,
+  activeBranchId,
+  unreadBranch,
+  onHome,
+  onSelect,
+  onCreate,
+  onJoin,
+}) {
   return (
     <nav className="branch-rail">
       <button
@@ -20,7 +28,9 @@ export default function BranchRail({ branches, activeBranchId, unreadBranch, onH
           title={b.name}
         >
           {b.name.slice(0, 2).toUpperCase()}
-          {unreadBranch[b.id] > 0 && <span className="rail-badge">{unreadBranch[b.id] > 9 ? "9+" : unreadBranch[b.id]}</span>}
+          {unreadBranch[b.id] > 0 && (
+            <span className="rail-badge">{unreadBranch[b.id] > 9 ? "9+" : unreadBranch[b.id]}</span>
+          )}
         </button>
       ))}
       <button className="rail-item action" onClick={onCreate} title="Buat Branch baru">

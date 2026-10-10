@@ -76,6 +76,8 @@ db.exec(`
   );
   CREATE INDEX IF NOT EXISTS idx_messages_channel ON messages(channel_id, id);
   CREATE INDEX IF NOT EXISTS idx_messages_dm ON messages(dm_key, id);
+  CREATE INDEX IF NOT EXISTS idx_channels_branch ON channels(branch_id, position, id);
+  CREATE INDEX IF NOT EXISTS idx_memberships_branch ON memberships(branch_id);
 
   CREATE TABLE IF NOT EXISTS reactions (
     message_id INTEGER NOT NULL,

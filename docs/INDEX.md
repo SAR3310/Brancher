@@ -57,11 +57,12 @@
    - Authentication methods
 
 ### Operations & Deployment
-- **DEPLOYMENT.md** ⏳ [PENDING] (See root `README.md` & `NETWORK.md` for current deployment guides)
+- **[DEPLOYMENT.md](./DEPLOYMENT.md)** - Production deploy (Docker, env, backup, HTTPS)
 - **[NETWORK.md](../NETWORK.md)** - Network configuration
 - **[TAILSCALE.md](../TAILSCALE.md)** - Tailscale setup guide
 - **[TROUBLESHOOTING.md](../TROUBLESHOOTING.md)** - Common issues
 - **[LOGIN-ERROR-FIX.md](../LOGIN-ERROR-FIX.md)** - Specific issue documentation
+- **[CHANGELOG.md](../CHANGELOG.md)** - Version history (Keep a Changelog)
 
 ---
 

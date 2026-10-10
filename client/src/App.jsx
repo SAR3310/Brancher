@@ -33,7 +33,10 @@ export default function App() {
 
   // ---------- cek sesi login ----------
   useEffect(() => {
-    api("/api/me").then(setMe).catch(() => {}).finally(() => setChecking(false));
+    api("/api/me")
+      .then(setMe)
+      .catch(() => {})
+      .finally(() => setChecking(false));
   }, []);
 
   // ---------- koneksi socket setelah login ----------
@@ -83,10 +86,14 @@ export default function App() {
   }, [me]);
 
   const refreshBranches = useCallback(() => {
-    api("/api/branches").then(setBranches).catch(() => {});
+    api("/api/branches")
+      .then(setBranches)
+      .catch(() => {});
   }, []);
   const refreshFriends = useCallback(() => {
-    api("/api/friends").then(setFriends).catch(() => {});
+    api("/api/friends")
+      .then(setFriends)
+      .catch(() => {});
   }, []);
 
   // ---------- navigasi ----------
@@ -170,15 +177,28 @@ export default function App() {
           onCreateChannel={() => setModal({ type: "createChannel", branch: branchDetail })}
           onLeave={async () => {
             if (!confirm("Keluar dari branch ini?")) return;
-            try { await api(`/api/branches/${activeBranchId}/leave`, "POST", {}); refreshBranches(); goHome(); }
-            catch (e) { alert(e.message); }
+            try {
+              await api(`/api/branches/${activeBranchId}/leave`, "POST", {});
+              refreshBranches();
+              goHome();
+            } catch (e) {
+              alert(e.message);
+            }
           }}
           onDelete={async () => {
             if (!confirm(`HAPUS branch "${branchDetail.name}" beserta seluruh isinya?`)) return;
-            try { await api("/api/branches/" + activeBranchId, "DELETE"); refreshBranches(); goHome(); }
-            catch (e) { alert(e.message); }
+            try {
+              await api("/api/branches/" + activeBranchId, "DELETE");
+              refreshBranches();
+              goHome();
+            } catch (e) {
+              alert(e.message);
+            }
           }}
-          onLogout={async () => { await api("/api/logout", "POST", {}); location.reload(); }}
+          onLogout={async () => {
+            await api("/api/logout", "POST", {});
+            location.reload();
+          }}
         />
       ) : (
         <HomeSidebar
@@ -188,7 +208,10 @@ export default function App() {
           activeDM={activeDM}
           unreadDM={unread.dm}
           onSelectDM={openDM}
-          onLogout={async () => { await api("/api/logout", "POST", {}); location.reload(); }}
+          onLogout={async () => {
+            await api("/api/logout", "POST", {});
+            location.reload();
+          }}
         />
       )}
 
@@ -208,7 +231,12 @@ export default function App() {
             target={{ type: "dm", dm: activeDM }}
           />
         ) : !activeBranchId ? (
-          <FriendsView friends={friends} onlineIds={onlineIds} refresh={refreshFriends} onOpenDM={openDM} />
+          <FriendsView
+            friends={friends}
+            onlineIds={onlineIds}
+            refresh={refreshFriends}
+            onOpenDM={openDM}
+          />
         ) : (
           <div className="empty-state">Pilih channel untuk mulai mengobrol</div>
         )}
@@ -227,9 +255,21 @@ export default function App() {
         <Modal
           modal={modal}
           onClose={() => setModal(null)}
-          onBranchCreated={(b) => { refreshBranches(); setModal(null); openBranch(b.id); }}
-          onBranchJoined={(b) => { refreshBranches(); setModal(null); openBranch(b.id); socket?.emit("branch:subscribe", b.id); }}
-          onChannelCreated={() => { setModal(null); refreshBranchDetail(); }}
+          onBranchCreated={(b) => {
+            refreshBranches();
+            setModal(null);
+            openBranch(b.id);
+          }}
+          onBranchJoined={(b) => {
+            refreshBranches();
+            setModal(null);
+            openBranch(b.id);
+            socket?.emit("branch:subscribe", b.id);
+          }}
+          onChannelCreated={() => {
+            setModal(null);
+            refreshBranchDetail();
+          }}
         />
       )}
     </div>

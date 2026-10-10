@@ -16,8 +16,15 @@ export default function AuthScreen({ onLogin }) {
     try {
       const user =
         mode === "login"
-          ? await api("/api/login", "POST", { identifier: form.identifier, password: form.password })
-          : await api("/api/register", "POST", { username: form.username, email: form.email, password: form.password });
+          ? await api("/api/login", "POST", {
+              identifier: form.identifier,
+              password: form.password,
+            })
+          : await api("/api/register", "POST", {
+              username: form.username,
+              email: form.email,
+              password: form.password,
+            });
       onLogin(user);
     } catch (err) {
       setError(err.message);
@@ -27,8 +34,11 @@ export default function AuthScreen({ onLogin }) {
   }
 
   async function oauth(provider) {
-    try { await api("/api/auth/" + provider); }
-    catch (e) { setError(e.message); }
+    try {
+      await api("/api/auth/" + provider);
+    } catch (e) {
+      setError(e.message);
+    }
   }
 
   return (
@@ -43,14 +53,29 @@ export default function AuthScreen({ onLogin }) {
         </p>
 
         {mode === "login" ? (
-          <input placeholder="Email atau username" value={form.identifier} onChange={set("identifier")} autoFocus />
+          <input
+            placeholder="Email atau username"
+            value={form.identifier}
+            onChange={set("identifier")}
+            autoFocus
+          />
         ) : (
           <>
-            <input placeholder="Username" value={form.username} onChange={set("username")} autoFocus />
+            <input
+              placeholder="Username"
+              value={form.username}
+              onChange={set("username")}
+              autoFocus
+            />
             <input type="email" placeholder="Email" value={form.email} onChange={set("email")} />
           </>
         )}
-        <input type="password" placeholder="Password" value={form.password} onChange={set("password")} />
+        <input
+          type="password"
+          placeholder="Password"
+          value={form.password}
+          onChange={set("password")}
+        />
 
         {error && <p className="error">{error}</p>}
 
@@ -59,13 +84,22 @@ export default function AuthScreen({ onLogin }) {
         </button>
 
         <div className="oauth-row">
-          <button type="button" className="oauth-btn" onClick={() => oauth("google")}>Google</button>
-          <button type="button" className="oauth-btn" onClick={() => oauth("github")}>GitHub</button>
+          <button type="button" className="oauth-btn" onClick={() => oauth("google")}>
+            Google
+          </button>
+          <button type="button" className="oauth-btn" onClick={() => oauth("github")}>
+            GitHub
+          </button>
         </div>
 
         <p className="switch-mode">
           {mode === "login" ? "Belum punya akun? " : "Sudah punya akun? "}
-          <a onClick={() => { setMode(mode === "login" ? "register" : "login"); setError(""); }}>
+          <a
+            onClick={() => {
+              setMode(mode === "login" ? "register" : "login");
+              setError("");
+            }}
+          >
             {mode === "login" ? "Daftar" : "Masuk"}
           </a>
         </p>

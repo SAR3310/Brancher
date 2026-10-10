@@ -8,7 +8,8 @@ import { IconPin, IconAttach, IconSend, IconClose, IconHash, IconMegaphone } fro
 export default function ChatView({ me, socket, target }) {
   const isChannel = target.type === "channel";
   const channel = target.channel;
-  const isStaff = isChannel && (target.branch.myRole === "owner" || target.branch.myRole === "admin");
+  const isStaff =
+    isChannel && (target.branch.myRole === "owner" || target.branch.myRole === "admin");
   const readOnly = isChannel && channel.type === "announce" && !isStaff;
 
   const [messages, setMessages] = useState([]);
@@ -31,11 +32,13 @@ export default function ChatView({ me, socket, target }) {
   // ---------- muat riwayat & join room ----------
   useEffect(() => {
     if (isChannel) socket.emit("channel:join", channel.id);
-    api(baseUrl).then((msgs) => {
-      setMessages(msgs);
-      oldestRef.current = msgs.length ? msgs[0].id : null;
-      requestAnimationFrame(scrollBottom);
-    }).catch((e) => alert(e.message));
+    api(baseUrl)
+      .then((msgs) => {
+        setMessages(msgs);
+        oldestRef.current = msgs.length ? msgs[0].id : null;
+        requestAnimationFrame(scrollBottom);
+      })
+      .catch((e) => alert(e.message));
   }, []);
 
   // ---------- event socket ----------
@@ -43,7 +46,9 @@ export default function ChatView({ me, socket, target }) {
     const onNew = (msg) => {
       const mine =
         (isChannel && msg.channel_id === channel.id) ||
-        (!isChannel && msg.dm_key && msg.dm_key.split("-").map(Number).includes(target.dm.userId) &&
+        (!isChannel &&
+          msg.dm_key &&
+          msg.dm_key.split("-").map(Number).includes(target.dm.userId) &&
           (msg.user_id === target.dm.userId || msg.user_id === me.id));
       if (!mine) return;
       setMessages((ms) => [...ms, msg]);
@@ -83,7 +88,9 @@ export default function ChatView({ me, socket, target }) {
       oldestRef.current = older[0].id;
       const prevHeight = el.scrollHeight;
       setMessages((ms) => [...older, ...ms]);
-      requestAnimationFrame(() => { el.scrollTop = el.scrollHeight - prevHeight; });
+      requestAnimationFrame(() => {
+        el.scrollTop = el.scrollHeight - prevHeight;
+      });
     } else {
       oldestRef.current = null;
     }
@@ -140,7 +147,9 @@ export default function ChatView({ me, socket, target }) {
         </span>
         {isChannel && (
           <div className="header-actions">
-            <button onClick={showPins} title="Pesan yang dipin"><IconPin size={16} /></button>
+            <button onClick={showPins} title="Pesan yang dipin">
+              <IconPin size={16} />
+            </button>
             <input
               placeholder="Cari pesan..."
               value={search}
@@ -155,7 +164,9 @@ export default function ChatView({ me, socket, target }) {
         <div className="panel">
           <div className="panel-header">
             <span>{panel.title}</span>
-            <button onClick={() => setPanel(null)}><IconClose size={14} /></button>
+            <button onClick={() => setPanel(null)}>
+              <IconClose size={14} />
+            </button>
           </div>
           <div className="panel-body">
             {panel.messages.length === 0 && <p className="panel-empty">Tidak ada hasil.</p>}
@@ -177,7 +188,8 @@ export default function ChatView({ me, socket, target }) {
             onReply={() => setReplyingTo(m)}
             onEdit={() => {
               const c = prompt("Edit pesan:", m.content || "");
-              if (c && c !== m.content) socket.emit("message:edit", { messageId: m.id, content: c });
+              if (c && c !== m.content)
+                socket.emit("message:edit", { messageId: m.id, content: c });
             }}
             onDelete={() => {
               if (confirm("Hapus pesan ini?")) socket.emit("message:delete", { messageId: m.id });
@@ -193,13 +205,19 @@ export default function ChatView({ me, socket, target }) {
 
       {replyingTo && (
         <div className="reply-bar">
-          <span>Membalas <b>{replyingTo.username}</b>: {(replyingTo.content || "[file]").slice(0, 50)}</span>
-          <button onClick={() => setReplyingTo(null)}><IconClose size={13} /></button>
+          <span>
+            Membalas <b>{replyingTo.username}</b>: {(replyingTo.content || "[file]").slice(0, 50)}
+          </span>
+          <button onClick={() => setReplyingTo(null)}>
+            <IconClose size={13} />
+          </button>
         </div>
       )}
 
       {readOnly ? (
-        <div className="composer readonly">Hanya admin branch yang dapat mengirim di channel pengumuman</div>
+        <div className="composer readonly">
+          Hanya admin branch yang dapat mengirim di channel pengumuman
+        </div>
       ) : (
         <div className="composer">
           <label className="attach" title="Kirim file/gambar">
@@ -216,7 +234,9 @@ export default function ChatView({ me, socket, target }) {
             }}
             placeholder={`Kirim pesan... (**tebal** *miring* \`kode\` @nama)`}
           />
-          <button onClick={submit} title="Kirim"><IconSend size={18} /></button>
+          <button onClick={submit} title="Kirim">
+            <IconSend size={18} />
+          </button>
         </div>
       )}
 
@@ -225,10 +245,15 @@ export default function ChatView({ me, socket, target }) {
           <div className="picker-overlay" onClick={() => setPicker(null)} />
           <div className="emoji-picker" style={{ top: picker.y, left: picker.x }}>
             {EMOJIS.map((e) => (
-              <button key={e} onClick={() => {
-                socket.emit("message:react", { messageId: picker.messageId, emoji: e });
-                setPicker(null);
-              }}>{e}</button>
+              <button
+                key={e}
+                onClick={() => {
+                  socket.emit("message:react", { messageId: picker.messageId, emoji: e });
+                  setPicker(null);
+                }}
+              >
+                {e}
+              </button>
             ))}
           </div>
         </>

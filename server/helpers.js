@@ -35,9 +35,9 @@ function dmKey(a, b) {
 
 // Role user di sebuah branch ("owner"|"admin"|"member"|null jika bukan anggota)
 function branchRole(userId, branchId) {
-  const row = db.prepare(
-    "SELECT role FROM memberships WHERE user_id = ? AND branch_id = ?"
-  ).get(userId, branchId);
+  const row = db
+    .prepare("SELECT role FROM memberships WHERE user_id = ? AND branch_id = ?")
+    .get(userId, branchId);
   return row ? row.role : null;
 }
 
@@ -56,11 +56,24 @@ function channelForMember(channelId, userId) {
 
 // Apakah dua user berteman (status accepted)?
 function areFriends(a, b) {
-  return !!db.prepare(`
+  return !!db
+    .prepare(
+      `
     SELECT 1 FROM friendships
     WHERE status = 'accepted'
       AND ((requester_id = ? AND addressee_id = ?) OR (requester_id = ? AND addressee_id = ?))
-  `).get(a, b, b, a);
+  `,
+    )
+    .get(a, b, b, a);
 }
 
-module.exports = { MSG_SELECT, attachReactions, getMessage, dmKey, branchRole, isBranchStaff, channelForMember, areFriends };
+module.exports = {
+  MSG_SELECT,
+  attachReactions,
+  getMessage,
+  dmKey,
+  branchRole,
+  isBranchStaff,
+  channelForMember,
+  areFriends,
+};

@@ -3,6 +3,7 @@
 ## 🛠️ Development Setup
 
 ### Quick Start
+
 ```bash
 # Terminal 1: Server
 npm start
@@ -16,11 +17,13 @@ cd client && npm run dev
 ### Code Structure
 
 #### **Server (`server/`)**
+
 - **index.js**: Main Express app - all routes and Socket.io handlers
 - **db.js**: SQLite database initialization and schema
 - **helpers.js**: Shared utilities - permission checks, query helpers
 
 #### **Client (`client/src/`)**
+
 - **App.jsx**: Main component - state management, navigation
 - **components/**: Reusable React components
   - **AuthScreen.jsx**: Login/Register forms
@@ -40,6 +43,7 @@ cd client && npm run dev
 ### Key Files Explained
 
 #### `server/index.js` - What's What
+
 - **Lines 1-30**: Imports & middleware
 - **Lines 30-55**: Session & rate limiting setup
 - **Lines 56-66**: File upload configuration
@@ -51,7 +55,9 @@ cd client && npm run dev
 - **Lines 482-495**: Client static serving (SPA)
 
 #### `server/db.js` - Schema
+
 Tables auto-created:
+
 - `users` - username, email, password_hash
 - `branches` - community spaces
 - `memberships` - join table with roles
@@ -61,6 +67,7 @@ Tables auto-created:
 - `reactions` - emoji reactions on messages
 
 #### `server/helpers.js` - Utility Functions
+
 - `MSG_SELECT` - SQL template for message queries with joins
 - `branchRole(userId, branchId)` - returns user's role or null
 - `isBranchStaff()` - true if owner/admin
@@ -71,6 +78,7 @@ Tables auto-created:
 - `getMessage()` - get single message with reactions
 
 #### `client/src/utils.js` - Helpers
+
 - `api(url, method, body)` - fetch wrapper with error handling
 - `formatContent(text, username)` - markdown + mentions + links
 - `extractPreviews(text)` - detect YouTube/images
@@ -80,6 +88,7 @@ Tables auto-created:
 ### Common Workflows
 
 #### **Adding a New API Endpoint**
+
 1. Add route in `server/index.js`
 2. Check auth with `requireLogin` middleware
 3. Validate input
@@ -89,6 +98,7 @@ Tables auto-created:
 7. Return JSON response
 
 Example:
+
 ```javascript
 app.post("/api/something", requireLogin, (req, res) => {
   const { param } = req.body;
@@ -106,6 +116,7 @@ app.post("/api/something", requireLogin, (req, res) => {
 ```
 
 #### **Adding a New React Component**
+
 1. Create file in `client/src/components/`
 2. Use hooks: `useState`, `useEffect`, `useCallback`, `useRef`
 3. Call API with `api()` helper from utils
@@ -113,25 +124,27 @@ app.post("/api/something", requireLogin, (req, res) => {
 5. Export default component
 
 Example:
+
 ```javascript
 export default function MyComponent({ me, socket, onUpdate }) {
   const [data, setData] = useState(null);
-  
+
   useEffect(() => {
     api("/api/endpoint").then(setData);
   }, []);
-  
+
   useEffect(() => {
     if (!socket) return;
     socket.on("event", onUpdate);
     return () => socket.off("event", onUpdate);
   }, [socket]);
-  
+
   return <div>...</div>;
 }
 ```
 
 #### **Adding a Real-time Feature**
+
 1. Add Socket.io event handler in `server/index.js`
 2. Broadcast with `io.to(room).emit(event, data)`
 3. Add listener in client component
@@ -141,31 +154,33 @@ export default function MyComponent({ me, socket, onUpdate }) {
 ### Database Queries
 
 Always use parameterized queries to prevent SQL injection:
+
 ```javascript
 // ✅ GOOD
-db.prepare("SELECT * FROM users WHERE id = ?").get(userId)
+db.prepare("SELECT * FROM users WHERE id = ?").get(userId);
 
 // ❌ BAD - SQL injection risk
-db.prepare(`SELECT * FROM users WHERE id = ${userId}`).get()
+db.prepare(`SELECT * FROM users WHERE id = ${userId}`).get();
 ```
 
 Common patterns:
+
 ```javascript
 // Select one
-db.prepare("SELECT * FROM users WHERE id = ?").get(id)
+db.prepare("SELECT * FROM users WHERE id = ?").get(id);
 
 // Select multiple
-db.prepare("SELECT * FROM messages WHERE channel_id = ? ORDER BY id").all(channelId)
+db.prepare("SELECT * FROM messages WHERE channel_id = ? ORDER BY id").all(channelId);
 
 // Insert with last ID
-const r = db.prepare("INSERT INTO users (...) VALUES (?, ?)").run(val1, val2)
-const newId = Number(r.lastInsertRowid)
+const r = db.prepare("INSERT INTO users (...) VALUES (?, ?)").run(val1, val2);
+const newId = Number(r.lastInsertRowid);
 
 // Update
-db.prepare("UPDATE users SET name = ? WHERE id = ?").run(name, id)
+db.prepare("UPDATE users SET name = ? WHERE id = ?").run(name, id);
 
 // Delete
-db.prepare("DELETE FROM messages WHERE id = ?").run(messageId)
+db.prepare("DELETE FROM messages WHERE id = ?").run(messageId);
 ```
 
 ### Socket.io Rooms
@@ -176,13 +191,13 @@ Channel room: `channel:${channelId}` - for channel messages
 
 ```javascript
 // Broadcasting
-io.to("branch:5").emit("message", data)  // To specific branch
+io.to("branch:5").emit("message", data); // To specific branch
 
 // User-specific
-io.to("user:123").emit("notification", data)  // To specific user
+io.to("user:123").emit("notification", data); // To specific user
 
 // Everyone
-io.emit("presence", onlineUsers)  // Broadcast to all
+io.emit("presence", onlineUsers); // Broadcast to all
 ```
 
 ### Authentication Flow
@@ -206,11 +221,13 @@ io.emit("presence", onlineUsers)  // Broadcast to all
 ### Styling
 
 Global styles in `client/src/styles.css`:
+
 - CSS Grid layout for app structure
 - CSS custom properties for colors
 - Mobile-first responsive design (ready to improve)
 
 Class naming:
+
 - `.app` - main container
 - `.chat` - message view
 - `.sidebar`, `.rail` - navigation
@@ -220,6 +237,7 @@ Class naming:
 ### Testing
 
 #### Manually test:
+
 1. Create account
 2. Create branch with invite code
 3. Join same branch in different browser tab
@@ -229,6 +247,7 @@ Class naming:
 7. Send DM
 
 #### API testing:
+
 ```bash
 curl -X POST http://localhost:3000/api/register \
   -H "Content-Type: application/json" \
@@ -238,22 +257,27 @@ curl -X POST http://localhost:3000/api/register \
 ### Common Issues & Fixes
 
 **Issue: "Belum login" error**
+
 - Cause: No session or expired session
 - Fix: User needs to re-login
 
 **Issue: "Bukan anggota branch ini"**
+
 - Cause: User trying to access branch they're not member of
 - Fix: Check user joined the branch (verify in database)
 
 **Issue: File upload fails**
+
 - Cause: Permission issue or disk full
 - Fix: Check `data/uploads/` folder exists and is writable
 
 **Issue: Real-time message not appearing**
+
 - Cause: Socket.io connection issue
 - Fix: Check browser console for errors, server logs
 
 **Issue: Database locked**
+
 - Cause: Multiple processes accessing SQLite simultaneously
 - Fix: WAL mode helps, but ensure single server instance
 
@@ -329,6 +353,7 @@ Follow these standards to maintain code quality:
 **Scope**: `auth`, `messages`, `channels`, `branches`, `friends`, `db`, `ui`
 
 Examples:
+
 - `feat(messages): add emoji reactions`
 - `fix(auth): prevent session fixation`
 - `docs(api): update message endpoints`

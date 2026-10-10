@@ -12,9 +12,7 @@ const RegisterSchema = z.object({
     .max(20, "Username maksimal 20 karakter")
     .regex(/^[a-zA-Z0-9_]+$/, "Username hanya boleh huruf, angka, underscore"),
   email: z.string().email("Email tidak valid"),
-  password: z
-    .string()
-    .min(6, "Password minimal 6 karakter"),
+  password: z.string().min(6, "Password minimal 6 karakter"),
 });
 
 const LoginSchema = z.object({
@@ -28,17 +26,12 @@ const CreateBranchSchema = z.object({
     .string()
     .min(2, "Nama branch minimal 2 karakter")
     .max(50, "Nama branch maksimal 50 karakter"),
-  description: z
-    .string()
-    .max(200, "Deskripsi maksimal 200 karakter")
-    .optional()
-    .default(""),
+  description: z.string().max(200, "Deskripsi maksimal 200 karakter").optional().default(""),
+  template: z.enum(["empty", "default", "dev", "gaming"]).optional().default("empty"),
 });
 
 const JoinBranchSchema = z.object({
-  code: z
-    .string()
-    .length(8, "Kode invite harus 8 karakter"),
+  code: z.string().length(8, "Kode invite harus 8 karakter"),
 });
 
 // ========== CHANNEL SCHEMAS ==========
@@ -48,9 +41,7 @@ const CreateChannelSchema = z.object({
     .min(2, "Nama channel minimal 2 karakter")
     .max(30, "Nama channel maksimal 30 karakter")
     .regex(/^[a-z0-9-]+$/, "Nama channel hanya huruf kecil, angka, dash"),
-  type: z
-    .enum(["text", "announce", "voice"])
-    .default("text"),
+  type: z.enum(["text", "announce", "voice"]).default("text"),
 });
 
 // ========== MESSAGE SCHEMAS ==========
@@ -85,56 +76,45 @@ const ReactMessageSchema = z.object({
 
 // ========== MEMBER SCHEMAS ==========
 const ChangeMemberRoleSchema = z.object({
-  role: z
-    .enum(["owner", "admin", "member"])
-    .refine((role) => role !== "owner", {
-      message: "Tidak bisa ubah owner",
-    }),
+  role: z.enum(["owner", "admin", "member"]).refine((role) => role !== "owner", {
+    message: "Tidak bisa ubah owner",
+  }),
 });
 
 // ========== FRIEND SCHEMAS ==========
 const AddFriendSchema = z.object({
-  username: z
-    .string()
-    .min(1, "Username harus diisi"),
+  username: z.string().min(1, "Username harus diisi"),
 });
 
 // ========== FILE UPLOAD SCHEMAS ==========
 const FileUploadSchema = z.object({
-  size: z
-    .number()
-    .max(10 * 1024 * 1024, "File terlalu besar (max 10MB)"),
-  mimetype: z
-    .string()
-    .refine(
-      (type) => {
-        // Allowed file types
-        const allowed = [
-          "image/jpeg",
-          "image/png",
-          "image/gif",
-          "image/webp",
-          "application/pdf",
-          "text/plain",
-          "application/msword",
-          "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-          "application/vnd.ms-excel",
-          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        ];
-        return allowed.includes(type);
-      },
-      {
-        message: "Tipe file tidak didukung (hanya image, PDF, dokumen)",
-      }
-    ),
+  size: z.number().max(10 * 1024 * 1024, "File terlalu besar (max 10MB)"),
+  mimetype: z.string().refine(
+    (type) => {
+      // Allowed file types
+      const allowed = [
+        "image/jpeg",
+        "image/png",
+        "image/gif",
+        "image/webp",
+        "application/pdf",
+        "text/plain",
+        "application/msword",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "application/vnd.ms-excel",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      ];
+      return allowed.includes(type);
+    },
+    {
+      message: "Tipe file tidak didukung (hanya image, PDF, dokumen)",
+    },
+  ),
 });
 
 // ========== SEARCH SCHEMAS ==========
 const SearchMessagesSchema = z.object({
-  q: z
-    .string()
-    .min(1, "Query harus diisi")
-    .max(100, "Query maksimal 100 karakter"),
+  q: z.string().min(1, "Query harus diisi").max(100, "Query maksimal 100 karakter"),
   channel: z.number().positive().optional(),
 });
 
@@ -200,31 +180,31 @@ module.exports = {
   // Auth schemas
   RegisterSchema,
   LoginSchema,
-  
+
   // Branch schemas
   CreateBranchSchema,
   JoinBranchSchema,
-  
+
   // Channel schemas
   CreateChannelSchema,
-  
+
   // Message schemas
   SendMessageSchema,
   EditMessageSchema,
   ReactMessageSchema,
-  
+
   // Member schemas
   ChangeMemberRoleSchema,
-  
+
   // Friend schemas
   AddFriendSchema,
-  
+
   // File schemas
   FileUploadSchema,
-  
+
   // Search schemas
   SearchMessagesSchema,
-  
+
   // Middleware
   validateBody,
   validateQuery,
