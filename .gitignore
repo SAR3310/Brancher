@@ -5,3 +5,4 @@ data/
 .env
 nul
 logs/
+test-report-*.md

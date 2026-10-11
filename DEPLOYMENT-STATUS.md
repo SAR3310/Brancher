@@ -161,7 +161,7 @@ Total
 | QUICK-START-DOCKER.md | 10 KB | ✅ Complete | Quick reference, TL;DR guide |
 | FINAL-VALIDATION-REPORT.md | 24 KB | ✅ Complete | Comprehensive validation |
 | DOCKER-BUILD-TEST.ps1 | 16 KB | ✅ Complete | 14-step automated testing |
-| TASK-COMPLETION-SUMMARY.md | 8 KB | ✅ Complete | This task summary |
+| [TASK-COMPLETION-SUMMARY.md](docs/archive/TASK-COMPLETION-SUMMARY.md) | 8 KB | ✅ Complete | This task summary |
 | DEPLOYMENT-STATUS.md | This file | ✅ Complete | Visual status dashboard |
 
 **Total Documentation:** 102+ KB, 17,000+ lines
@@ -410,7 +410,7 @@ docker stop brancher
 ## 🎓 Documentation Index
 
 ### For Managers
-- **TASK-COMPLETION-SUMMARY.md** - Task status overview
+- **[TASK-COMPLETION-SUMMARY.md](docs/archive/TASK-COMPLETION-SUMMARY.md)** - Task status overview
 - **DEPLOYMENT-STATUS.md** - This file (visual dashboard)
 
 ### For Developers
@@ -464,7 +464,7 @@ DOCKER-DEPLOYMENT-SUMMARY.md
 QUICK-START-DOCKER.md
 FINAL-VALIDATION-REPORT.md
 DOCKER-BUILD-TEST.ps1
-TASK-COMPLETION-SUMMARY.md
+[TASK-COMPLETION-SUMMARY.md](docs/archive/TASK-COMPLETION-SUMMARY.md)
 DEPLOYMENT-STATUS.md
 ```
 

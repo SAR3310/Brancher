@@ -33,7 +33,7 @@
 ## Generated Files
 
 ### Main Report (Read This First)
-- **AGENT-REPORT.md** - Complete task summary and recommendations
+- **[AGENT-REPORT.md](docs/archive/AGENT-REPORT.md)** - Complete task summary and recommendations
 
 ### Documentation (Choose based on your role)
 - **QUICK-START-DOCKER.md** - Quick reference & TL;DR (start here if you just want to deploy)
@@ -42,7 +42,7 @@
 - **DOCKER-DEPLOYMENT-SUMMARY.md** - Executive summary
 - **FINAL-VALIDATION-REPORT.md** - Comprehensive technical validation
 - **DEPLOYMENT-STATUS.md** - Visual status dashboard
-- **TASK-COMPLETION-SUMMARY.md** - Task completion details
+- **[TASK-COMPLETION-SUMMARY.md](docs/archive/TASK-COMPLETION-SUMMARY.md)** - Task completion details
 
 ### Automation
 - **DOCKER-BUILD-TEST.ps1** - Automated testing script (14-step validation)
@@ -102,7 +102,7 @@ See **DEPLOYMENT-GUIDE.md** for step-by-step instructions.
 | What's the build status? | Production ready | DEPLOYMENT-STATUS.md |
 | How do I deploy to [platform]? | Complete guide | DEPLOYMENT-GUIDE.md |
 | What tests need to run? | Automated script | DOCKER-BUILD-TEST.ps1 |
-| Was it successful? | Yes, all done | AGENT-REPORT.md |
+| Was it successful? | Yes, all done | [AGENT-REPORT.md](docs/archive/AGENT-REPORT.md) |
 
 ### For Deep Dives
 - **PRODUCTION-BUILD-REPORT.md** - Build process analysis
@@ -155,7 +155,7 @@ Overall Status:        PRODUCTION READY ✅
 
 ### I need to...
 - **Deploy quickly** → Read QUICK-START-DOCKER.md
-- **Understand the process** → Read AGENT-REPORT.md
+- **Understand the process** → Read [AGENT-REPORT.md](docs/archive/AGENT-REPORT.md)
 - **Deploy to specific platform** → Read DEPLOYMENT-GUIDE.md
 - **Verify security** → Read FINAL-VALIDATION-REPORT.md
 - **Get high-level overview** → Read DEPLOYMENT-STATUS.md
@@ -194,14 +194,14 @@ docker stop brancher
 
 ### Documentation (8 files)
 1. START-HERE.md ← You are here
-2. AGENT-REPORT.md ← Main report
+2. [AGENT-REPORT.md](docs/archive/AGENT-REPORT.md) ← Main report
 3. QUICK-START-DOCKER.md ← Quick reference
 4. DEPLOYMENT-GUIDE.md ← Complete manual
 5. PRODUCTION-BUILD-REPORT.md ← Build analysis
 6. DOCKER-DEPLOYMENT-SUMMARY.md ← Summary
 7. FINAL-VALIDATION-REPORT.md ← Technical validation
 8. DEPLOYMENT-STATUS.md ← Status dashboard
-9. TASK-COMPLETION-SUMMARY.md ← Task details
+9. [TASK-COMPLETION-SUMMARY.md](docs/archive/TASK-COMPLETION-SUMMARY.md) ← Task details
 
 ### Automation (1 file)
 10. DOCKER-BUILD-TEST.ps1 ← Testing script
@@ -247,6 +247,6 @@ All documentation is provided. No additional work needed.
 
 💡 **Pro Tip:** If you just want to deploy quickly, read QUICK-START-DOCKER.md  
 📚 **For Everything:** Read DEPLOYMENT-GUIDE.md  
-📊 **For Overview:** Read AGENT-REPORT.md
+📊 **For Overview:** Read [AGENT-REPORT.md](docs/archive/AGENT-REPORT.md)
 
 🚀 **Ready to deploy!**

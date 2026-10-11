@@ -451,7 +451,7 @@ docker start <container-name>
 - `DEPLOYMENT-GUIDE.md` - Complete deployment manual
 - `PRODUCTION-BUILD-REPORT.md` - Build details
 - `DOCKER-BUILD-TEST.ps1` - Automated validation
-- `SECURITY-AUDIT-REPORT.md` - Security analysis
+- [SECURITY-AUDIT-REPORT.md](docs/archive/SECURITY-AUDIT-REPORT.md) - Security analysis
 
 ### Docker References
 - [Docker Official Documentation](https://docs.docker.com/)
