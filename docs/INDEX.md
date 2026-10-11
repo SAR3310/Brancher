@@ -1,7 +1,7 @@
 # Brancher - Documentation Index & Project Overview
 
 **Last Updated**: 2026-09-30  
-**Version**: 0.1.0 → Roadmap to 1.0.0 Production Ready
+**Version**: 0.1.0 (pra-produksi) → Roadmap ke 1.0.0
 
 ---
 
@@ -91,7 +91,7 @@ v0.3.0 (2-3 months) - Advanced Features
 ├── [ ] Database migration plan
 └── [ ] Monitoring setup
 
-v1.0.0 (6 months) - Production Ready
+v1.0.0 (6 months) - Target produksi
 ├── [ ] 99.9% uptime SLA
 ├── [ ] Full compliance (GDPR, etc.)
 ├── [ ] 10k+ concurrent users support
@@ -117,7 +117,7 @@ v1.0.0 (6 months) - Production Ready
 - **Monitoring**: No logging, error tracking, or observability
 - **API Documentation**: Comprehensive docs now available
 - **Design System**: Now documented, needs component implementation
-- **Testing**: No automated tests (critical for reliability)
+- **Testing**: Tes E2E ada (`e2e-load-test.js`), belum terintegrasi ke `npm test` dan belum ada unit test
 - **CI/CD**: No automated pipeline (needed for quality)
 
 ### Risk Assessment 🔴
@@ -411,7 +411,7 @@ v1.0.0 (6 months) - Production Ready
 | **Performance** | < 100ms p95 latency | ~50-100ms | 🟡 good |
 | **Reliability** | 99.9% uptime | Unknown | 🔴 no monitoring |
 | **Code Quality** | > 80% test coverage | 0% | 🔴 pending |
-| **Documentation** | 100% API documented | 100% ✅ | 🟢 done |
+| **Documentation** | 100% API documented | Belum diverifikasi | 🟡 perlu audit |
 | **Scalability** | 10k concurrent users | 500-1000 | 🟡 needs work |
 | **Compliance** | GDPR/CCPA ready | Not ready | 🔴 pending |
 | **Developer Experience** | < 10 min setup | ~15-20 min | 🟡 acceptable |
