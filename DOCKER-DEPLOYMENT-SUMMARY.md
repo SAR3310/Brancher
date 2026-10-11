@@ -213,7 +213,7 @@ docker ps
 
 ### Step 2: Build Docker Image
 ```bash
-cd C:\Users\Kentaro\Documents\projects\brancher
+cd brancher
 docker build -t brancher:latest .
 ```
 

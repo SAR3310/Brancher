@@ -716,7 +716,7 @@ docker version  # Verify both client and server
 ### Step 2: Build Docker Image (3-5 minutes)
 
 ```bash
-cd C:\Users\Kentaro\Documents\projects\brancher
+cd brancher
 docker build -t brancher:latest .
 ```
 

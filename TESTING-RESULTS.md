@@ -337,7 +337,7 @@ Test Results Generated:
 
 **Test Suite Location:** 
 ```
-C:\Users\Kentaro\Documents\projects\brancher\
+brancher\
 ├── e2e-load-test.js
 ├── runner.js
 ├── TESTING-GUIDE.md

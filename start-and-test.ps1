@@ -1,6 +1,6 @@
 # Start server in background
 Write-Host "Starting Brancher server..."
-$serverProcess = Start-Process -FilePath "npm" -ArgumentList "start" -WorkingDirectory "C:\Users\Kentaro\Documents\projects\brancher" -PassThru -NoNewWindow
+$serverProcess = Start-Process -FilePath "npm" -ArgumentList "start" -WorkingDirectory $PSScriptRoot -PassThru -NoNewWindow
 Write-Host "Server started with PID: $($serverProcess.Id)"
 
 # Wait for server to be ready

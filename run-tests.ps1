@@ -4,7 +4,7 @@ Get-Process node -ErrorAction SilentlyContinue | Stop-Process -Force
 # Start server
 Write-Host "Starting server..."
 $serverJob = Start-Job -ScriptBlock {
-    cd 'C:\Users\Kentaro\Documents\projects\brancher'
+    cd $PSScriptRoot
     & npm start
 }
 

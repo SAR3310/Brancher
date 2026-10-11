@@ -204,7 +204,7 @@ If error at any step → "Terjadi kesalahan"
 3. **Restart fresh**
 
    ```powershell
-   cd C:\Users\Kentaro\Documents\projects\brancher
+   cd brancher
    .\run-brancher.ps1
    ```
 
