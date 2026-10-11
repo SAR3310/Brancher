@@ -1,4 +1,7 @@
 # Final Validation Report - Production Build & Docker Deployment
+
+> **ARSIP — belum terverifikasi.** Dokumen ini adalah catatan sesi kerja lama. Klaim seperti "production ready", "100%", atau "Stability ✅" di dalamnya **tidak dapat dipercaya**: beberapa bug (backend crash saat start, login gagal karena kontrak field API `identifier` vs `email`) lolos dari laporan-laporan ini. Klaim soal Docker build juga kemungkinan tidak pernah diverifikasi sungguhan — header laporan ini sendiri menyebut "DOCKER BUILD PENDING". Lihat `CHANGELOG.md` untuk status terkini. Dokumen ini hanya disimpan sebagai riwayat.
+
 **Generated:** 2026-10-05T05:15:00Z  
 **Branch:** chore/versioning-lint-ci  
 **Status:** ✅ COMPLETE - PRODUCTION READY

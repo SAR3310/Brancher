@@ -1,5 +1,7 @@
 # Brancher - Network Access Guide
 
+> **ARSIP — digantikan.** Dokumen ini sudah digantikan oleh [`docs/NETWORKING.md`](../NETWORKING.md). Disimpan hanya sebagai riwayat; IP dan konfigurasi di dalamnya sudah usang.
+
 ## 🌐 Network Exposure Configuration
 
 Aplikasi Brancher sekarang berjalan di **0.0.0.0** (semua interfaces) dan dapat diakses dari:

@@ -35,11 +35,10 @@ brancher/
 ├── CHANGELOG.md               # Riwayat versi
 ├── DEVELOPMENT.md             # Panduan developer
 ├── TROUBLESHOOTING.md         # Masalah umum & solusi
-├── NETWORK.md                 # Akses LAN / jaringan
-├── TAILSCALE.md               # Akses via Tailscale
-├── QUICK-START-NETWORK.md     # Setup jaringan cepat
 ├── docs/
 │   ├── INDEX.md               # Portal dokumentasi
+│   ├── VISION.md              # Visi, misi, keputusan arsitektur
+│   ├── NETWORKING.md          # Akses jaringan (LAN, Tailscale, reverse proxy)
 │   ├── API.md                 # Referensi API
 │   ├── SELF-HOSTING.md        # Self-hosting
 │   ├── DEPLOYMENT.md          # Deployment produksi

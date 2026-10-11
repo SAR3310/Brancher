@@ -1,5 +1,7 @@
 # Quick Start - Docker Build & Deployment
 
+> **ARSIP — digantikan.** Panduan ini sudah digantikan oleh [`docs/DEPLOYMENT.md`](../DEPLOYMENT.md). Disimpan hanya sebagai riwayat; beberapa isinya (status, format `CORS_ORIGINS`) sudah tidak akurat.
+
 ## TL;DR - Complete Deployment in 5 Steps
 
 ### 1️⃣ Start Docker (2 minutes)

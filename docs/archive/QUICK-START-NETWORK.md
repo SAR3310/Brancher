@@ -1,5 +1,7 @@
 # Brancher - Quick Start - Network Access
 
+> **ARSIP — digantikan.** Dokumen ini sudah digantikan oleh [`docs/NETWORKING.md`](../NETWORKING.md). Disimpan hanya sebagai riwayat; IP dan konfigurasi di dalamnya sudah usang.
+
 ## 🎯 Access Your App
 
 ### From Your Machine

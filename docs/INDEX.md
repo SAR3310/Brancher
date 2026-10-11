@@ -12,7 +12,7 @@
 
 ### 🚀 Getting Started
 - **[README.md](../README.md)** - Project overview and quick start
-- **[QUICK-START-NETWORK.md](../QUICK-START-NETWORK.md)** - Network setup guide
+- **[NETWORKING.md](./NETWORKING.md)** - Network access guide (LAN, Tailscale, reverse proxy)
 - **[DEVELOPMENT.md](../DEVELOPMENT.md)** - Development environment setup
 
 ### 👨‍💻 For Developers & Agents
@@ -62,10 +62,8 @@
 ### Operations & Deployment
 - **[DEPLOYMENT.md](./DEPLOYMENT.md)** - Production deploy (Docker, env, backup, HTTPS)
 - **[TESTING.md](./TESTING.md)** - Cara menjalankan tes E2E, hasil terakhir (termasuk kegagalan), dan yang belum diuji
-- **[NETWORK.md](../NETWORK.md)** - Network configuration
-- **[TAILSCALE.md](../TAILSCALE.md)** - Tailscale setup guide
+- **[NETWORKING.md](./NETWORKING.md)** - Network access (LAN, Tailscale, reverse proxy)
 - **[TROUBLESHOOTING.md](../TROUBLESHOOTING.md)** - Common issues
-- **[LOGIN-ERROR-FIX.md](archive/LOGIN-ERROR-FIX.md)** - Specific issue documentation
 - **[CHANGELOG.md](../CHANGELOG.md)** - Version history (Keep a Changelog)
 
 ---
@@ -381,7 +379,7 @@ v1.0.0 (6 months) - Target produksi
 
 ### Troubleshooting Guide
 - **[Database Connection Issues](../TROUBLESHOOTING.md#database)**
-- **[Network Setup](../NETWORK.md)** (Future)
+- **[Network Setup](./NETWORKING.md)**
 - **[Performance Tuning](../TROUBLESHOOTING.md)** (Future)
 
 ---

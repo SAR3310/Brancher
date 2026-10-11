@@ -1,5 +1,7 @@
 # Brancher - Tailscale & Network Access Setup
 
+> **ARSIP — digantikan.** Dokumen ini sudah digantikan oleh [`docs/NETWORKING.md`](../NETWORKING.md). Disimpan hanya sebagai riwayat; IP dan konfigurasi di dalamnya sudah usang.
+
 ## ✅ Vite AllowedHosts Issue - FIXED!
 
 Jika Anda mendapat error "This host is not allowed", itu sudah diperbaiki dengan menambahkan `allowedHosts` di vite.config.js.

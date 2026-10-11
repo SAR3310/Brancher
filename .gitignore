@@ -6,3 +6,5 @@ data/
 nul
 logs/
 test-report-*.md
+test-output.log
+test-results-*.json

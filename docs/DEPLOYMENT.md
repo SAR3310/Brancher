@@ -1,8 +1,7 @@
 # Brancher - Deployment Produksi
 
 Panduan deploy produksi. Untuk akses LAN/dev (Tailscale, IP lokal),
-lihat `NETWORK.md`, `TAILSCALE.md`, dan `QUICK-START-NETWORK.md` —
-tidak diulang di sini.
+lihat `docs/NETWORKING.md` — tidak diulang di sini.
 
 ## 1. Environment variables
 
@@ -65,7 +64,7 @@ brancher.example.com {
 ```
 
 WebSocket Socket.io diteruskan otomatis oleh reverse proxy modern.
-Contoh nginx manual ada di `NETWORK.md` (bagian Reverse Proxy).
+Contoh nginx manual ada di `NETWORKING.md` (bagian Reverse Proxy).
 
 ## 5. Checklist rilis
 

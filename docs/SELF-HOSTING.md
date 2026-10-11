@@ -585,7 +585,7 @@ SQLite bisa handle ~500 concurrent users. Kalau lebih:
 2. Migrate ke PostgreSQL
 3. Update connection string di `.env`
 
-Lihat: `docs/MIGRATION-POSTGRESQL.md`
+Lihat: `docs/MIGRATION-POSTGRESQL.md` — *belum ditulis; direncanakan.*
 
 ### Upgrade ke Multi-Instance (High Availability)
 
@@ -594,7 +594,7 @@ Deploy 2+ instances + load balancer:
 2. 2x Brancher instances
 3. nginx load balancer
 
-Lihat: `docs/DEPLOYMENT-HA.md`
+Lihat: `docs/DEPLOYMENT-HA.md` — *belum ditulis; direncanakan.*
 
 ---
 

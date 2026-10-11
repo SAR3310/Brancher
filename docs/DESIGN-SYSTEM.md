@@ -1,7 +1,7 @@
 # Brancher - Design System & UI/UX Guidelines
 
 **Version**: 1.0  
-**Status**: Production Ready  
+**Status**: Draft — belum diverifikasi  
 **Last Updated**: 2026-09-30
 
 ---
