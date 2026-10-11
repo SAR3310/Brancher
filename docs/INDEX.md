@@ -7,6 +7,9 @@
 
 ## 📚 Complete Documentation Structure
 
+### 🧭 Project Direction
+- **[VISION.md](./VISION.md)** ⭐ **[NEW]** - Visi, misi, target, dan keputusan arsitektur (federasi, E2EE opt-in, consent flow). **Baca ini dulu sebelum mengubah arsitektur.**
+
 ### 🚀 Getting Started
 - **[README.md](../README.md)** - Project overview and quick start
 - **[QUICK-START-NETWORK.md](../QUICK-START-NETWORK.md)** - Network setup guide
