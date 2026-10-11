@@ -9,7 +9,7 @@ echo  1. Backend Server (Port 3000)
 echo  2. Frontend Dev Server (Port 5173)
 echo.
 
-cd /d C:\Users\Kentaro\Documents\Hermes-Project\brancher
+cd /d C:\Users\Kentaro\Documents\projects\brancher
 
 REM Start server in new window
 echo Starting Backend Server...

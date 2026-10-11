@@ -16,7 +16,7 @@ docker ps
 
 ### 2️⃣ Build Docker Image (3-5 minutes)
 ```bash
-cd C:\Users\Kentaro\Documents\Hermes-Project\brancher
+cd C:\Users\Kentaro\Documents\projects\brancher
 docker build -t brancher:latest .
 ```
 
@@ -70,7 +70,7 @@ docker logs brancher-prod
 
 ### Build Command
 ```bash
-cd C:\Users\Kentaro\Documents\Hermes-Project\brancher
+cd C:\Users\Kentaro\Documents\projects\brancher
 docker build -t brancher:latest .
 ```
 

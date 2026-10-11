@@ -4,7 +4,7 @@
 Write-Host "Starting Brancher Application..." -ForegroundColor Cyan
 Write-Host ""
 
-$appPath = "C:\Users\Kentaro\Documents\Hermes-Project\brancher"
+$appPath = "C:\Users\Kentaro\Documents\projects\brancher"
 Set-Location -LiteralPath $appPath
 
 Write-Host "Working directory: $appPath" -ForegroundColor Gray

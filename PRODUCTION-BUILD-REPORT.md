@@ -239,7 +239,7 @@ RATE_LIMIT_MAX=100            # Max requests per window
 # On Windows, ensure Docker Desktop is running
 
 # Step 2: Build the image
-cd C:\Users\Kentaro\Documents\Hermes-Project\brancher
+cd C:\Users\Kentaro\Documents\projects\brancher
 docker build -t brancher:latest .
 
 # Step 3: Test the container

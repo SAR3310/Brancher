@@ -4,7 +4,7 @@ Get-Process node -ErrorAction SilentlyContinue | Stop-Process -Force
 # Start server
 Write-Host "Starting server..."
 $serverJob = Start-Job -ScriptBlock {
-    cd 'C:\Users\Kentaro\Documents\Hermes-Project\brancher'
+    cd 'C:\Users\Kentaro\Documents\projects\brancher'
     & npm start
 }
 

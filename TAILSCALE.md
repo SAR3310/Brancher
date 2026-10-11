@@ -278,7 +278,7 @@ When you need to restart services:
 
 ```powershell
 # Navigate to project
-cd C:\Users\Kentaro\Documents\Hermes-Project\brancher
+cd C:\Users\Kentaro\Documents\projects\brancher
 
 # Option 1: Use script
 .\run-brancher.ps1

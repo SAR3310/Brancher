@@ -471,7 +471,7 @@ Overall Rating      A+          Production Ready
 
 2. **Build Docker Image**
    ```bash
-   cd C:\Users\Kentaro\Documents\Hermes-Project\brancher
+   cd C:\Users\Kentaro\Documents\projects\brancher
    docker build -t brancher:latest .
    ```
    Expected time: 3-5 minutes

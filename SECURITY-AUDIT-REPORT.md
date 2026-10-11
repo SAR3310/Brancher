@@ -2,7 +2,7 @@
 ## Final Report - October 5, 2026
 
 **Project**: Brancher  
-**Workspace**: C:\Users\Kentaro\Documents\Hermes-Project\brancher  
+**Workspace**: C:\Users\Kentaro\Documents\projects\brancher  
 **Branch**: chore/versioning-lint-ci  
 **Date**: 2026-10-05  
 **Auditor**: Security Subagent  

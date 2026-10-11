@@ -226,7 +226,7 @@ Monthly:
 
 ### Full Test Run
 ```bash
-cd C:\Users\Kentaro\Documents\Hermes-Project\brancher
+cd C:\Users\Kentaro\Documents\projects\brancher
 
 # Option 1: Automatic (recommended)
 node runner.js
