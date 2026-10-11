@@ -1,5 +1,7 @@
 # Brancher - Login Error Fix
 
+> **ARSIP — belum terverifikasi.** Dokumen ini adalah catatan sesi kerja lama. Klaim seperti "production ready", "100%", atau "Stability ✅" di dalamnya **tidak dapat dipercaya**: beberapa bug (backend crash saat start, login gagal karena kontrak field API) lolos dari laporan-laporan ini. Lihat `CHANGELOG.md` untuk status terkini. Dokumen ini hanya disimpan sebagai riwayat.
+
 ## 🔴 Error: "Terjadi Kesalahan" (An Error Occurred)
 
 Jika Anda mendapat error saat login/register, masalahnya kemungkinan:

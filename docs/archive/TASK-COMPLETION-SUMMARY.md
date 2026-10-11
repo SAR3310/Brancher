@@ -1,4 +1,7 @@
 # Production Build & Docker Deployment - Task Completion Summary
+
+> **ARSIP — belum terverifikasi.** Dokumen ini adalah catatan sesi kerja lama. Klaim seperti "production ready", "100%", atau "Stability ✅" di dalamnya **tidak dapat dipercaya**: beberapa bug (backend crash saat start, login gagal karena kontrak field API) lolos dari laporan-laporan ini. Lihat `CHANGELOG.md` untuk status terkini. Dokumen ini hanya disimpan sebagai riwayat.
+
 **Submitted:** 2026-10-05  
 **Status:** ✅ COMPLETE (100% of objectives achieved)
 

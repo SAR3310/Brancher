@@ -61,7 +61,7 @@
 - **[NETWORK.md](../NETWORK.md)** - Network configuration
 - **[TAILSCALE.md](../TAILSCALE.md)** - Tailscale setup guide
 - **[TROUBLESHOOTING.md](../TROUBLESHOOTING.md)** - Common issues
-- **[LOGIN-ERROR-FIX.md](../LOGIN-ERROR-FIX.md)** - Specific issue documentation
+- **[LOGIN-ERROR-FIX.md](archive/LOGIN-ERROR-FIX.md)** - Specific issue documentation
 - **[CHANGELOG.md](../CHANGELOG.md)** - Version history (Keep a Changelog)
 
 ---

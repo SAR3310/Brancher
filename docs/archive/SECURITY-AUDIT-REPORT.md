@@ -1,4 +1,7 @@
 # Security Audit & Hardening Implementation
+
+> **ARSIP — belum terverifikasi.** Dokumen ini adalah catatan sesi kerja lama. Klaim seperti "production ready", "100%", atau "Stability ✅" di dalamnya **tidak dapat dipercaya**: beberapa bug (backend crash saat start, login gagal karena kontrak field API) lolos dari laporan-laporan ini. Lihat `CHANGELOG.md` untuk status terkini. Dokumen ini hanya disimpan sebagai riwayat.
+
 ## Final Report - October 5, 2026
 
 **Project**: Brancher  

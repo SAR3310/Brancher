@@ -1,4 +1,7 @@
 # Production Build & Docker Deployment - Agent Report
+
+> **ARSIP — belum terverifikasi.** Dokumen ini adalah catatan sesi kerja lama. Klaim seperti "production ready", "100%", atau "Stability ✅" di dalamnya **tidak dapat dipercaya**: beberapa bug (backend crash saat start, login gagal karena kontrak field API) lolos dari laporan-laporan ini. Lihat `CHANGELOG.md` untuk status terkini. Dokumen ini hanya disimpan sebagai riwayat.
+
 **Submitted by:** OpenCode Agent  
 **Submitted to:** Kentaro  
 **Date:** 2026-10-05 05:15 UTC  
