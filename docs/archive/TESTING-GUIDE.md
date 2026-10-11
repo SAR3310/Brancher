@@ -1,5 +1,7 @@
 # Brancher Testing Guide
 
+> **ARSIP — belum terverifikasi.** Laporan tes lama. Klaim seperti "85.7%" dan "Production Ready" tidak mencakup tiga tes Socket.IO yang gagal. Dokumen aktif: `docs/TESTING.md`.
+
 Quick reference for running E2E, load, and performance tests.
 
 ## Quick Start

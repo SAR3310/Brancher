@@ -1,5 +1,7 @@
 # Brancher E2E & Load Testing - Executive Summary
 
+> **ARSIP — belum terverifikasi.** Laporan tes lama. Klaim seperti "85.7%" dan "Production Ready" tidak mencakup tiga tes Socket.IO yang gagal. Dokumen aktif: `docs/TESTING.md`.
+
 **Date:** October 5, 2026  
 **Status:** ✓ COMPLETED  
 **Overall Result:** 85.7% Success Rate (18/21 tests passed)

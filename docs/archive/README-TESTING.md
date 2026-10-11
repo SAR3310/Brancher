@@ -1,5 +1,7 @@
 # Brancher Testing Suite - Complete Overview
 
+> **ARSIP — belum terverifikasi.** Laporan tes lama. Klaim seperti "85.7%" dan "Production Ready" tidak mencakup tiga tes Socket.IO yang gagal. Dokumen aktif: `docs/TESTING.md`.
+
 ## 🎯 Mission Accomplished
 
 Complete end-to-end and load testing suite for the Brancher project has been implemented and executed successfully.

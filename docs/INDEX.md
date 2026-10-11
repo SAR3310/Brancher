@@ -58,6 +58,7 @@
 
 ### Operations & Deployment
 - **[DEPLOYMENT.md](./DEPLOYMENT.md)** - Production deploy (Docker, env, backup, HTTPS)
+- **[TESTING.md](./TESTING.md)** - Cara menjalankan tes E2E, hasil terakhir (termasuk kegagalan), dan yang belum diuji
 - **[NETWORK.md](../NETWORK.md)** - Network configuration
 - **[TAILSCALE.md](../TAILSCALE.md)** - Tailscale setup guide
 - **[TROUBLESHOOTING.md](../TROUBLESHOOTING.md)** - Common issues

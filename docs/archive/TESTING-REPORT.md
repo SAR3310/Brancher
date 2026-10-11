@@ -1,5 +1,7 @@
 # Brancher E2E & Load Testing - Comprehensive Report
 
+> **ARSIP — belum terverifikasi.** Laporan tes lama. Klaim seperti "85.7%" dan "Production Ready" tidak mencakup tiga tes Socket.IO yang gagal. Dokumen aktif: `docs/TESTING.md`.
+
 **Date:** October 5, 2026  
 **Branch:** chore/versioning-lint-ci  
 **Test Suite:** E2E Workflow, Load Testing, Error Handling, Performance Metrics
