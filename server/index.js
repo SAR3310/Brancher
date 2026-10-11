@@ -138,7 +138,7 @@ app.post("/api/register", authLimiter, V.validateBody(V.RegisterSchema), (req, r
 });
 
 app.post("/api/login", authLimiter, V.validateBody(V.LoginSchema), (req, res) => {
-  const { email: identifier, password } = req.validated; // email field bisa berisi email atau username
+  const { identifier, password } = req.validated; // identifier bisa berisi email atau username
   const user = db
     .prepare("SELECT * FROM users WHERE username = ? OR email = ?")
     .get(identifier, identifier);

@@ -16,7 +16,7 @@ const RegisterSchema = z.object({
 });
 
 const LoginSchema = z.object({
-  email: z.string().min(1, "Email/Username harus diisi"),
+  identifier: z.string().min(1, "Email/Username harus diisi"),
   password: z.string().min(1, "Password harus diisi"),
 });
 
