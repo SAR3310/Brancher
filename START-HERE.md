@@ -37,7 +37,7 @@
 
 ### Documentation (Choose based on your role)
 - **QUICK-START-DOCKER.md** - Quick reference & TL;DR (start here if you just want to deploy)
-- **DEPLOYMENT-GUIDE.md** - Complete manual for all platforms (definitive guide)
+- **docs/DEPLOYMENT.md** - Panduan aktif: docs/DEPLOYMENT.md (Docker, produksi, HTTPS, backup)
 - **PRODUCTION-BUILD-REPORT.md** - Build analysis and statistics
 - **DOCKER-DEPLOYMENT-SUMMARY.md** - Executive summary
 - **FINAL-VALIDATION-REPORT.md** - Comprehensive technical validation
@@ -89,7 +89,7 @@ Choose your platform:
 - **Kubernetes**
 - **VPS (AWS, Linode, DigitalOcean)**
 
-See **DEPLOYMENT-GUIDE.md** for step-by-step instructions.
+See **docs/DEPLOYMENT.md** for step-by-step instructions.
 
 ---
 
@@ -100,14 +100,14 @@ See **DEPLOYMENT-GUIDE.md** for step-by-step instructions.
 |----------|--------|------|
 | How do I deploy? | 5 simple steps | QUICK-START-DOCKER.md |
 | What's the build status? | Production ready | DEPLOYMENT-STATUS.md |
-| How do I deploy to [platform]? | Complete guide | DEPLOYMENT-GUIDE.md |
+| How do I deploy to [platform]? | docs/DEPLOYMENT.md | docs/DEPLOYMENT.md |
 | What tests need to run? | Automated script | DOCKER-BUILD-TEST.ps1 |
 | Was it successful? | Yes, all done | [AGENT-REPORT.md](docs/archive/AGENT-REPORT.md) |
 
 ### For Deep Dives
 - **PRODUCTION-BUILD-REPORT.md** - Build process analysis
 - **FINAL-VALIDATION-REPORT.md** - Security and performance validation
-- **DEPLOYMENT-GUIDE.md** - Comprehensive deployment manual
+- **docs/DEPLOYMENT.md** - Panduan aktif: docs/DEPLOYMENT.md
 
 ---
 
@@ -145,7 +145,7 @@ Overall Status:        PRODUCTION READY ✅
 
 ### Then Deploy
 1. Choose your platform
-2. Follow DEPLOYMENT-GUIDE.md
+2. Follow docs/DEPLOYMENT.md
 3. Set environment variables
 4. Deploy and monitor
 
@@ -156,7 +156,7 @@ Overall Status:        PRODUCTION READY ✅
 ### I need to...
 - **Deploy quickly** → Read QUICK-START-DOCKER.md
 - **Understand the process** → Read [AGENT-REPORT.md](docs/archive/AGENT-REPORT.md)
-- **Deploy to specific platform** → Read DEPLOYMENT-GUIDE.md
+- **Deploy to specific platform** → Read docs/DEPLOYMENT.md
 - **Verify security** → Read FINAL-VALIDATION-REPORT.md
 - **Get high-level overview** → Read DEPLOYMENT-STATUS.md
 - **Troubleshoot issues** → See QUICK-START-DOCKER.md troubleshooting section
@@ -196,7 +196,7 @@ docker stop brancher
 1. START-HERE.md ← You are here
 2. [AGENT-REPORT.md](docs/archive/AGENT-REPORT.md) ← Main report
 3. QUICK-START-DOCKER.md ← Quick reference
-4. DEPLOYMENT-GUIDE.md ← Complete manual
+4. docs/DEPLOYMENT.md ← Panduan aktif
 5. PRODUCTION-BUILD-REPORT.md ← Build analysis
 6. DOCKER-DEPLOYMENT-SUMMARY.md ← Summary
 7. FINAL-VALIDATION-REPORT.md ← Technical validation
@@ -246,7 +246,7 @@ All documentation is provided. No additional work needed.
 ---
 
 💡 **Pro Tip:** If you just want to deploy quickly, read QUICK-START-DOCKER.md  
-📚 **For Everything:** Read DEPLOYMENT-GUIDE.md  
+📚 **For Everything:** Read docs/DEPLOYMENT.md  
 📊 **For Overview:** Read [AGENT-REPORT.md](docs/archive/AGENT-REPORT.md)
 
 🚀 **Ready to deploy!**

@@ -1,4 +1,7 @@
 # Brancher - Deployment Guide
+
+> **ARSIP — belum terverifikasi.** Panduan ini ditulis sebelum bug backend (crash saat start, kontrak login) diperbaiki. Bagian Kubernetes **tidak ada manifest-nya di repo**. Status "Production Ready" di sini tidak dapat dipercaya. Panduan aktif: `docs/DEPLOYMENT.md`.
+
 **Version:** 0.1.0  
 **Status:** Production Ready  
 **Last Updated:** 2026-10-05

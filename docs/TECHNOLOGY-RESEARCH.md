@@ -1,5 +1,7 @@
 # Brancher - Technology Research & Analysis Report
 
+> **Catatan (Oktober 2026):** Dokumen ini ditulis 30 Sep 2026 dan belum diverifikasi ulang. Angka kapasitas di bagian 3 adalah **estimasi**, bukan hasil pengukuran. Bagian 4.1 tidak mencakup bug yang ditemukan kemudian (backend crash saat start, kontrak field login). Input validation dengan Zod sudah ada (lihat `server/validation.js`).
+
 **Version**: 1.0  
 **Date**: 2026-09-30  
 **Status**: Comprehensive Analysis
@@ -539,7 +541,7 @@ Or: Managed services (Railway, Render, Heroku) untuk ease
 
 ### Immediate Priorities (Next 1-2 months)
 1. **Security Hardening**
-   - [ ] Add input validation (Zod)
+   - [x] Input validation (Zod) — sudah ada di `server/validation.js`
    - [ ] Implement CSP headers
    - [ ] Setup security monitoring (Sentry)
 

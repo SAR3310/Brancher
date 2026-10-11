@@ -425,7 +425,7 @@ All 13 production dependencies verified and production-ready:
 | File | Size | Content | Status |
 |------|------|---------|--------|
 | PRODUCTION-BUILD-REPORT.md | 5,200 lines | Build details, artifacts, validation | ✅ Complete |
-| DEPLOYMENT-GUIDE.md | 4,800 lines | Complete deployment manual, all platforms | ✅ Complete |
+| docs/DEPLOYMENT.md | 4,800 lines | Panduan aktif: docs/DEPLOYMENT.md, all platforms | ✅ Complete |
 | DOCKER-BUILD-TEST.ps1 | 450+ lines | Automated Docker validation script | ✅ Complete |
 | DOCKER-DEPLOYMENT-SUMMARY.md | 3,000 lines | Executive summary, status, next steps | ✅ Complete |
 | QUICK-START-DOCKER.md | 1,500 lines | Quick reference, common commands | ✅ Complete |
@@ -871,7 +871,7 @@ All code paths have been validated. The application is ready for immediate deplo
 ### Documentation in Project
 - `README.md` - Project overview
 - `PRODUCTION-BUILD-REPORT.md` - Build details
-- `DEPLOYMENT-GUIDE.md` - Complete deployment manual
+- `docs/DEPLOYMENT.md` - Panduan aktif: docs/DEPLOYMENT.md
 - `QUICK-START-DOCKER.md` - Quick reference
 - `DOCKER-BUILD-TEST.ps1` - Automated tests
 - `DOCKER-DEPLOYMENT-SUMMARY.md` - Summary

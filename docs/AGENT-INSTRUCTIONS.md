@@ -1131,7 +1131,7 @@ brancher/
 │   ├── DESIGN-SYSTEM.md
 │   ├── DOCUMENTATION-STANDARDS.md
 │   ├── API.md
-│   └── PROJECT-COMPLETION-REPORT.md
+│   └── archive/           # Laporan sesi lama (tidak diverifikasi)
 ├── data/
 │   ├── brancher.db        # SQLite database
 │   ├── sessions.db        # Session store

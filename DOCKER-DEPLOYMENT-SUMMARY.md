@@ -152,8 +152,8 @@ The application is **production-ready** for Docker deployment. All code has been
 - Deployment checklist
 - Quick start guide
 
-✅ **DEPLOYMENT-GUIDE.md** (4,800 lines)
-- Complete deployment manual
+✅ **docs/DEPLOYMENT.md** (4,800 lines)
+- Panduan aktif: docs/DEPLOYMENT.md
 - Environment variables reference
 - Docker single container setup
 - Docker Compose configuration
@@ -382,7 +382,7 @@ docker start <container-name>
 
 ### Documentation
 - ✅ PRODUCTION-BUILD-REPORT.md (asset details)
-- ✅ DEPLOYMENT-GUIDE.md (complete manual)
+- ✅ docs/DEPLOYMENT.md (complete manual)
 - ✅ DOCKER-BUILD-TEST.ps1 (automated tests)
 - ✅ Security configurations documented
 - ✅ Environment variables documented
@@ -448,7 +448,7 @@ docker start <container-name>
 ### Documentation Files in Project
 - `README.md` - Project overview
 - `DEVELOPMENT.md` - Development setup
-- `DEPLOYMENT-GUIDE.md` - Complete deployment manual
+- `docs/DEPLOYMENT.md` - Panduan aktif: docs/DEPLOYMENT.md
 - `PRODUCTION-BUILD-REPORT.md` - Build details
 - `DOCKER-BUILD-TEST.ps1` - Automated validation
 - [SECURITY-AUDIT-REPORT.md](docs/archive/SECURITY-AUDIT-REPORT.md) - Security analysis
@@ -479,7 +479,7 @@ docker start <container-name>
 
 ### Untracked Files (Generated)
 - `PRODUCTION-BUILD-REPORT.md` - Build report
-- `DEPLOYMENT-GUIDE.md` - Deployment manual
+- `docs/DEPLOYMENT.md` - Deployment manual
 - `DOCKER-BUILD-TEST.ps1` - Test script
 - `DOCKER-DEPLOYMENT-SUMMARY.md` - This file
 - Various test reports (from earlier test runs)
@@ -487,7 +487,7 @@ docker start <container-name>
 ### Recommendation
 After Docker validation completes successfully, consider:
 ```bash
-git add PRODUCTION-BUILD-REPORT.md DEPLOYMENT-GUIDE.md DOCKER-BUILD-TEST.ps1
+git add PRODUCTION-BUILD-REPORT.md docs/DEPLOYMENT.md DOCKER-BUILD-TEST.ps1
 git commit -m "docs: add production build and deployment documentation"
 git push origin chore/versioning-lint-ci
 ```

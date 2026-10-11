@@ -156,7 +156,7 @@ Total
 | File | Size | Status | Content |
 |------|------|--------|---------|
 | PRODUCTION-BUILD-REPORT.md | 11 KB | ✅ Complete | Build stats, asset optimization, audit |
-| DEPLOYMENT-GUIDE.md | 19 KB | ✅ Complete | Complete manual, all platforms |
+| docs/DEPLOYMENT.md | 19 KB | ✅ Complete | Dipindah ke docs/archive (belum diverifikasi) |
 | DOCKER-DEPLOYMENT-SUMMARY.md | 14 KB | ✅ Complete | Executive summary, next steps |
 | QUICK-START-DOCKER.md | 10 KB | ✅ Complete | Quick reference, TL;DR guide |
 | FINAL-VALIDATION-REPORT.md | 24 KB | ✅ Complete | Comprehensive validation |
@@ -271,7 +271,7 @@ docker build -t brancher:latest .
 **Time:** 2 minutes
 
 ### Step 4: Deploy
-See DEPLOYMENT-GUIDE.md for your platform
+See docs/DEPLOYMENT.md for your platform
 - Docker Compose
 - Kubernetes
 - Railway/Render/Fly.io
@@ -317,7 +317,7 @@ curl http://localhost:3000/api/health
    - Any Linux VPS
 ```
 
-See **DEPLOYMENT-GUIDE.md** for step-by-step instructions for each platform.
+See **docs/DEPLOYMENT.md** for step-by-step instructions for each platform.
 
 ---
 
@@ -374,7 +374,7 @@ docker stop brancher
 
 ### Quick Help
 - **Quick Start:** See `QUICK-START-DOCKER.md`
-- **Full Guide:** See `DEPLOYMENT-GUIDE.md`
+- **Full Guide:** See `docs/DEPLOYMENT.md`
 - **Build Details:** See `PRODUCTION-BUILD-REPORT.md`
 - **Troubleshooting:** See `QUICK-START-DOCKER.md`
 
@@ -418,12 +418,12 @@ docker stop brancher
 - **DOCKER-BUILD-TEST.ps1** - Automated testing script
 
 ### For DevOps/Architects
-- **DEPLOYMENT-GUIDE.md** - Complete deployment manual
+- **docs/DEPLOYMENT.md** - Panduan aktif: docs/DEPLOYMENT.md
 - **PRODUCTION-BUILD-REPORT.md** - Build analysis
 - **FINAL-VALIDATION-REPORT.md** - Security audit
 
 ### For System Administrators
-- **DEPLOYMENT-GUIDE.md** (VPS section) - Server setup
+- **docs/DEPLOYMENT.md** (VPS section) - Server setup
 - **FINAL-VALIDATION-REPORT.md** - Security validation
 
 ---
@@ -459,7 +459,7 @@ docker stop brancher
 ### Generated Files (Ready to Commit)
 ```
 PRODUCTION-BUILD-REPORT.md
-DEPLOYMENT-GUIDE.md
+docs/DEPLOYMENT.md
 DOCKER-DEPLOYMENT-SUMMARY.md
 QUICK-START-DOCKER.md
 FINAL-VALIDATION-REPORT.md

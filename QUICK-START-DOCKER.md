@@ -461,7 +461,7 @@ docker logs --since 5m brancher
 
 ### Full Documentation
 - `PRODUCTION-BUILD-REPORT.md` - Build details
-- `DEPLOYMENT-GUIDE.md` - Complete manual
+- `docs/DEPLOYMENT.md` - Panduan aktif
 - `DOCKER-DEPLOYMENT-SUMMARY.md` - Full summary
 
 ---
