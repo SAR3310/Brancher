@@ -31,25 +31,27 @@
 ### Repository Documentation Hierarchy
 ```
 brancher/
-├── README.md                      # Entry point (what, why, quick start)
+├── README.md                  # Entry point (apa, kenapa, quick start)
+├── CHANGELOG.md               # Riwayat versi
+├── DEVELOPMENT.md             # Panduan developer
+├── TROUBLESHOOTING.md         # Masalah umum & solusi
+├── NETWORK.md                 # Akses LAN / jaringan
+├── TAILSCALE.md               # Akses via Tailscale
+├── QUICK-START-NETWORK.md     # Setup jaringan cepat
 ├── docs/
-│   ├── index.md                  # Documentation portal
-│   ├── GETTING-STARTED.md        # Detailed setup guide
-│   ├── ARCHITECTURE.md           # System design & architecture
-│   ├── API.md                    # API reference (or OpenAPI spec)
-│   ├── DEPLOYMENT.md             # Production deployment guide
-│   ├── CONTRIBUTING.md           # Developer contribution guide
-│   ├── TROUBLESHOOTING.md        # Common issues & solutions
-│   ├── SECURITY.md               # Security documentation
-│   ├── PERFORMANCE.md            # Performance tuning guide
-│   ├── DATABASE.md               # Database schema & migrations
-│   ├── REAL-TIME.md              # Socket.io & real-time events
-│   ├── TESTING.md                # Testing strategy & practices
-│   └── CHANGELOG.md              # Version history
-├── .github/
-│   └── ISSUE_TEMPLATE/           # Issue templates
-├── CODE_OF_CONDUCT.md            # Community guidelines
-└── LICENSE.md                    # Licensing information
+│   ├── INDEX.md               # Portal dokumentasi
+│   ├── API.md                 # Referensi API
+│   ├── SELF-HOSTING.md        # Self-hosting
+│   ├── DEPLOYMENT.md          # Deployment produksi
+│   ├── SECURITY-AUDIT.md      # Audit keamanan
+│   ├── TECHNOLOGY-RESEARCH.md # Riset teknologi
+│   ├── DESIGN-SYSTEM.md       # Sistem desain UI
+│   ├── AGENT-INSTRUCTIONS.md  # Panduan untuk agen AI
+│   ├── DOCUMENTATION-STANDARDS.md
+│   └── archive/               # Laporan sesi lama (belum diverifikasi)
+├── .github/workflows/ci.yml   # CI
+├── server/                    # Backend (Express + Socket.io)
+└── client/                    # Frontend (React + Vite)
 ```
 
 ### README.md Structure
@@ -203,8 +205,8 @@ Don't nest blockquotes (hard to read)
 Click [here](docs/API.md) for API docs
 
 ✅ Internal links:
-[Architecture](ARCHITECTURE.md)
-[Getting Started](./docs/GETTING-STARTED.md)
+[Architecture](docs/TECHNOLOGY-RESEARCH.md)
+[Getting Started](README.md)
 
 ✅ External links:
 [Node.js Documentation](https://nodejs.org/docs)
@@ -716,7 +718,7 @@ jsdoc server/*.js -d docs/api/
 ## 13. Multi-Language Support (Future)
 
 ```
-When supporting multiple languages:
+Contoh (belum diterapkan di repo ini) — jika suatu saat mendukung banyak bahasa:
 ├── docs/
 │   ├── en/
 │   │   ├── README.md
