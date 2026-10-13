@@ -5,6 +5,7 @@
   "main": "server/index.js",
   "scripts": {
     "start": "node server/index.js",
+    "backup": "node scripts/backup-db.js",
     "dev": "node server/index.js",
     "build": "cd client && npm install && npm run build",
     "postinstall": "cd client && npm install",
