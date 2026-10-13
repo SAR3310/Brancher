@@ -24,6 +24,7 @@ const V = require("./validation");
 const { z } = require("zod");
 const { logAuth, logEvent, logError, logPermissionDenied, httpLogger } = require("./logger");
 const { getTemplate } = require("./templates");
+const { checkFileContent } = require("./fileCheck");
 const { securityHeadersMiddleware, corsConfigMiddleware } = require("./security");
 
 const app = express();
@@ -565,6 +566,14 @@ app.post("/api/upload", requireLogin, upload.single("file"), (req, res) => {
       return res.status(400).json({ error: error.errors[0].message });
     }
     return res.status(400).json({ error: "Validasi file gagal" });
+  }
+
+  // Cek isi file (magic bytes), bukan hanya label mimetype dari browser
+  const content = checkFileContent(req.file.path, req.file.mimetype);
+  if (!content.ok) {
+    try { fs.unlinkSync(req.file.path); } catch (_) {}
+    logEvent && logEvent("upload_rejected", { user: req.session.userId, reason: content.reason });
+    return res.status(400).json({ error: content.reason });
   }
 
   res.json({ url: "/uploads/" + req.file.filename, name: req.file.originalname });
